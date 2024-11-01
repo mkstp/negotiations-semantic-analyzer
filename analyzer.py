@@ -29,11 +29,15 @@ def convertTime(timeList, totalTime):
 
     return outputList
 
-def anonymize(nameList):
-    #anonymize speaker names
+def processSpeakerNames(nameList, anonymizeFlag=True):
     outputList = nameList
-    for idx, speaker in enumerate(set(outputList)):
-        outputList = [name.replace(speaker, "Speaker" + str(idx)) for name in outputList]
+    #anonymize speaker names
+    if anonymizeFlag:
+        for idx, speaker in enumerate(set(outputList)):
+            outputList = [name.replace(speaker, "Speaker" + str(idx)) for name in outputList]
+    else:
+        for idx, speaker in enumerate(set(outputList)):
+            outputList = [name.replace(speaker, speaker.strip('- \n')) for name in outputList]
     return outputList
 
 def cleanText(transcriptionList):
@@ -114,7 +118,7 @@ def congruence(transcriptList):
     congruenceScoreList = []
 
     for i in range(1, len(transcriptList)):
-        sentences = [transcriptList[i][:500], transcriptList[i-1][:500]]
+        sentences = [transcriptList[i][:500], transcriptList[i-1][:500]] #truncated to fit within nlp batch size, not optimal
         embeddings = sentence_model.encode(sentences)
         similarities = sentence_model.similarity(embeddings, embeddings)
         congruenceScoreList.append(round(float(similarities[0][1]), 2))
@@ -124,7 +128,7 @@ def congruence(transcriptList):
 
     return congruenceScoreDict
 
-def filePrep(dir):
+def filePrep(dir, anonymizeFlag=True):
 
     # FILE PREP: retreive raw transcript and split into lists and clean up values 
     file = open(dir)
@@ -137,7 +141,7 @@ def filePrep(dir):
         totalConvoTime = 0
     content = content[content.find("---"):]
     #regx split by '0:00' OR '- First Last (moniker)\n' 
-    content = re.split(r'[\s](\d{1,2}\:\d{2}\s?)|(\-\s\w+\s\w+\s\(.+\)\n)', content)[1:]
+    content = re.split(r'[\s](\d{1,2}\:\d{2}\s?)|(\-\s[A-Z][a-z]+)', content)[1:]
     content = list(filter(None, content))
     timestamps = []
     speakers = []
@@ -149,7 +153,7 @@ def filePrep(dir):
 
 
     timespans = convertTime(timestamps, totalConvoTime)
-    speakers = anonymize(speakers)
+    speakers = processSpeakerNames(speakers, anonymizeFlag)
     transcripts = cleanText(transcripts)
 
     return [speakers, timespans, transcripts]

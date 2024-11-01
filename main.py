@@ -1,8 +1,9 @@
 import analyzer
 import plotter
 
-location = 'content/demo_transcript.txt'
-data = analyzer.filePrep(location)
+location = 'demoContent/demo_transcript.txt'
+# set flag to true to anonymize speakers, set to false to preserve names
+data = analyzer.filePrep(location, False)
 
 speakers = data[0]
 timespans = data[1]
