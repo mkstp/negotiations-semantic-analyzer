@@ -91,7 +91,7 @@ def plotFeeling(sentiments):
     plt.ylim(-1, 1)
 
     # add labels
-    plt.ylabel("Sentimate")
+    plt.ylabel("Sentiment")
 
     # plot multiple lines
     for column in df.drop('x', axis=1):

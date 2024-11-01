@@ -15,7 +15,7 @@ congruenceDict = analyzer.congruence(transcripts)
 
 print(analyzer.univariate('Speech rate', speechRateDict))
 print(analyzer.univariate('Air time', airTimeDict))
-print(analyzer.univariate('Sentimate', sentimentDict))
+print(analyzer.univariate('Sentiment', sentimentDict))
 print(analyzer.univariate('Congruence', congruenceDict))
 
 plotter.plotSpeech(speechRateDict)
