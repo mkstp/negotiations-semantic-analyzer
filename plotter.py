@@ -1,23 +1,24 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def plotSpeech(rates):
+def plotSpeech(dataDict):
     #takes in a dictionary of speakers and rates and plots them as line graphs
-    # equalize the length of each list for plotting
+    # get the size of the largest list
     size = 0
-    for key in rates.keys():
-        compare = len(rates[key])
+    for key in dataDict.keys():
+        compare = len(dataDict[key])
         if size == 0:
             size = compare
-        elif size > compare:
+        elif size < compare:
             size = compare
+        
+    # equalize the smaller list to the larger
+    for value in dataDict.values():
+        while len(value) < size:
+            value.append(None)
 
-    # Make a data frame
-    df=pd.DataFrame({
-        'x': ["Round " + str(i+1) for i in range(0, size)], 
-        'y1': rates['Speaker0'][:size], 
-        'y2': rates['Speaker1'][:size]
-        })
+    # define domain
+    xaxis = ["Round " + str(i+1) for i in range(0, size)]
 
     # set figure size
     my_dpi=96
@@ -30,26 +31,28 @@ def plotSpeech(rates):
     plt.ylabel("Rate of Speech (wpm)")
 
     # plot multiple lines
-    for column in df.drop('x', axis=1):
-        plt.plot(df['x'], df[column], marker='', color='black', linewidth=2, alpha=1)
+    plt.plot(xaxis, dataDict['Speaker0'], label= 'Speaker0', marker='', color='red', linewidth=2, alpha=1)
+    plt.plot(xaxis, dataDict['Speaker1'], label= 'Speaker1', marker='', color='blue', linewidth=2, alpha=1)
+    plt.legend()
 
-def plotTime(times):
+def plotTime(dataDict):
     #takes in a dictionary of talking times per speaker and plots them as line graphs
-    # equalize the length of each list for plotting
+    # get the size of the largest list
     size = 0
-    for key in times.keys():
-        compare = len(times[key])
+    for key in dataDict.keys():
+        compare = len(dataDict[key])
         if size == 0:
             size = compare
-        elif size > compare:
+        elif size < compare:
             size = compare
+        
+    # equalize the smaller list to the larger
+    for value in dataDict.values():
+        while len(value) < size:
+            value.append(None)
 
-    # Make a data frame
-    df=pd.DataFrame({
-        'x': ["Round " + str(i+1) for i in range(0, size)], 
-        'y1': times['Speaker0'][:size], 
-        'y2': times['Speaker1'][:size]
-        })
+    # define domain
+    xaxis = ["Round " + str(i+1) for i in range(0, size)]
 
     # set figure size
     my_dpi=96
@@ -62,26 +65,28 @@ def plotTime(times):
     plt.ylabel("Air Time (s)")
 
     # plot multiple lines
-    for column in df.drop('x', axis=1):
-        plt.plot(df['x'], df[column], marker='', color='black', linewidth=2, alpha=1)
+    plt.plot(xaxis, dataDict['Speaker0'], label= 'Speaker0', marker='', color='red', linewidth=2, alpha=1)
+    plt.plot(xaxis, dataDict['Speaker1'], label= 'Speaker1', marker='', color='blue', linewidth=2, alpha=1)
+    plt.legend()
 
-def plotFeeling(sentiments):
+def plotFeeling(dataDict):
     #takes in a dictionary of talking times per speaker and plots them as line graphs
-    # equalize the length of each list for plotting
+    # get the size of the largest list
     size = 0
-    for key in sentiments.keys():
-        compare = len(sentiments[key])
+    for key in dataDict.keys():
+        compare = len(dataDict[key])
         if size == 0:
             size = compare
-        elif size > compare:
+        elif size < compare:
             size = compare
+        
+    # equalize the smaller list to the larger
+    for value in dataDict.values():
+        while len(value) < size:
+            value.append(None)
 
-    # Make a data frame
-    df=pd.DataFrame({
-        'x': ["Round " + str(i+1) for i in range(0, size)], 
-        'y1': sentiments['Speaker0'][:size], 
-        'y2': sentiments['Speaker1'][:size]
-        })
+    # define domain
+    xaxis = ["Round " + str(i+1) for i in range(0, size)]
 
     # set figure size
     my_dpi=96
@@ -94,18 +99,16 @@ def plotFeeling(sentiments):
     plt.ylabel("Sentiment")
 
     # plot multiple lines
-    for column in df.drop('x', axis=1):
-        plt.plot(df['x'], df[column], marker='', color='black', linewidth=2, alpha=1)
+    plt.plot(xaxis, dataDict['Speaker0'], label= 'Speaker0', marker='', color='red', linewidth=2, alpha=1)
+    plt.plot(xaxis, dataDict['Speaker1'], label= 'Speaker1', marker='', color='blue', linewidth=2, alpha=1)
+    plt.legend()
 
-def plotCongruence(similarity):
+def plotCongruence(dataDict):
     #takes in a list of turn congruencies and plots it as a line graph
-    size = len(similarity['Speakers'])
 
-    # Make a data frame
-    df=pd.DataFrame({
-        'x': ["Turn " + str(i+1) for i in range(0, size)], 
-        'y1': similarity['Speakers'][:size] 
-        })
+    # define domain
+    size = len(dataDict['Speakers'])
+    xaxis = ["Turn " + str(i+1) for i in range(0, size)]
 
     # set figure size
     my_dpi=96
@@ -117,6 +120,5 @@ def plotCongruence(similarity):
     # add labels
     plt.ylabel("Congruence (perc)")
 
-    # plot multiple lines
-    for column in df.drop('x', axis=1):
-        plt.plot(df['x'], df[column], marker='', color='black', linewidth=2, alpha=1)
+    plt.plot(xaxis, dataDict['Speakers'], label='Speakers', marker='', color='black', linewidth=2, alpha=1)
+    plt.legend()

@@ -79,13 +79,23 @@ def feelRate(speakerList, transcriptList):
     sentimentList = []
 
     #the model used gives a score out of 5 then a confidence percentage
-    #I took the score, then subtracted the tail of the confidence percentage
-    #then mapped it between -1 and 1
     for text in transcriptList:
         sentiment = sentimentPipeline(text[:500])[0]
-        score = round(int(sentiment['label'][0]) - (1 - sentiment['score']), 1)
-        score = interp(score, [1, 5], [-1, 1])
-        sentimentList.append(round(score, 2))
+        starRating = round(int(sentiment['label'][0]))
+        confidence = sentiment['score']
+
+        #the following score remapping strategy is meant to show conversations as more neutral unless 
+        #it detects strong positive or negative affectation with a lot of confidence
+
+        starRating = starRating - 3 #shifts the range down between -2 and 2
+        if starRating >= 0:
+            starRating -= (1-confidence) #positive scores become less positive if confidence is not high
+        else:
+            starRating += (1-confidence) #negative scores become more neutral if confidence is not high 
+
+        starRating = interp(starRating, [-2, 2], [-1, 1])
+
+        sentimentList.append(round(starRating, 2))
 
     output = {}
     for i, t in zip(speakerList, sentimentList):
