@@ -24,7 +24,7 @@ def plotSpeech(dataDict):
     plt.figure(figsize=(1024/my_dpi, 480/my_dpi), dpi=my_dpi)
 
     # set range
-    plt.ylim(0, 400)
+    plt.ylim(0, 250)
 
     # add labels
     plt.xlabel("Rounds")
@@ -111,8 +111,18 @@ def plotFeeling(dataDict):
 def plotCongruence(dataDict):
     #takes in a list of turn congruencies and plots it as a line graph
 
-    # define domain
-    size = len(dataDict['Speakers'])
+    size = 0
+    for key in dataDict.keys():
+        compare = len(dataDict[key])
+        if size == 0:
+            size = compare
+        elif size < compare:
+            size = compare
+        
+    # equalize the smaller list to the larger
+    for value in dataDict.values():
+        while len(value) < size:
+            value.append(None)
     xaxis = [str(i+1) for i in range(0, size)]
 
     # set figure size
@@ -123,11 +133,11 @@ def plotCongruence(dataDict):
     plt.ylim(0, 1)
 
     # add labels
-    plt.xlabel("Turns")
+    plt.xlabel("Rounds")
     plt.ylabel("Congruence (perc)")
 
     # plot multiple lines
-    colours = ['red', 'blue', 'green']
+    colours = ['red', 'blue', 'green', 'black']
     for idx, speaker in enumerate(dataDict.keys()):
-        plt.plot(xaxis, dataDict[speaker], label= speaker, marker='', color= colours[idx%3], linewidth=2, alpha=1)
+        plt.plot(xaxis, dataDict[speaker], label= speaker, marker='', color= colours[idx%len(colours)], linewidth=2, alpha=1)
     plt.legend()
