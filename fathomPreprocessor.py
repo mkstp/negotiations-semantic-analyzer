@@ -44,6 +44,8 @@ def cleanText(transcriptionList):
 
     #regx substitute 
     transcriptionList = [re.sub(r'\s{2,}', ' ', t) for t in transcriptionList]
+
+    transcriptionList = [re.sub(r'(?: like )|(?: like, )', ' ', t) for t in transcriptionList]
     return transcriptionList
 
 #main function

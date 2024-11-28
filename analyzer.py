@@ -1,5 +1,17 @@
 #this model takes in json data from a parameterized transcript and does analysis on the parameters
 from collections import defaultdict
+import torch
+import numpy as np
+
+#deals with tensor filtering
+def maskFilter(tensor, matchThreshold=0.45):
+    #inputs a tensor and filters according to a threshold, then returns a list of indices
+    #where the filter was achieved
+    simScores = tensor 
+    mask = (simScores > matchThreshold) & (simScores < 0.9)
+    filtered = torch.nonzero(mask, as_tuple=True)[0]
+
+    return filtered.tolist()
 
 #proportional distributions across speaker parameters
 def compareSpeakers(parameterOutput, parameter):
@@ -49,6 +61,28 @@ def avgSpeakerParam(parameterOutput, parameter):
 
     return {speaker: {f"average{parameter}": sum(rates) / len(rates)} for speaker, rates in rateData.items()}
 
+def avgResponsiveness(prameterOutput):
+    rateData = defaultdict(list)
+
+    for entry in prameterOutput:
+        speaker = entry['name']
+        if entry['responseSimilarity']:
+            maxResponseScore = max([i[1] for i in entry['responseSimilarity']])
+            rateData[speaker].append(maxResponseScore)
+
+    return {speaker: {f"average responsiveness": sum(rates) / len(rates)} for speaker, rates in rateData.items()}
+
+def avgSelfSimilarity(prameterOutput):
+    rateData = defaultdict(list)
+
+    for entry in prameterOutput:
+        speaker = entry['name']
+        if entry['selfSimilarity']:
+            maxSelfRepetitionScore = max([i[1] for i in entry['selfSimilarity']])
+            rateData[speaker].append(maxSelfRepetitionScore)
+
+    return {speaker: {f"average self repetition": sum(rates) / len(rates)} for speaker, rates in rateData.items()}
+
 def computeMetrics(parameterOutput):
 
     airTime = compareSpeakers(parameterOutput, 'airTime')
@@ -58,7 +92,9 @@ def computeMetrics(parameterOutput):
     emotions = tallySpeakerParam(parameterOutput, 'emotion', ['positive', 'neutral', 'negative'])
     avgRates = avgSpeakerParam(parameterOutput, 'wpm')
     avgAirTime = avgSpeakerParam(parameterOutput, 'airTime')
-    avgRedundancy = avgSpeakerParam(parameterOutput, 'turnRedundancy')
+    avgRedundancy = avgSpeakerParam(parameterOutput, 'efficiency')
+    avgResponse = avgResponsiveness(parameterOutput)
+    avgSelfSim = avgSelfSimilarity(parameterOutput)
 
     speakers = set(airTime.keys())
 
@@ -74,6 +110,9 @@ def computeMetrics(parameterOutput):
             **avgRates.get(speaker, {}),
             **avgAirTime.get(speaker, {}),
             **avgRedundancy.get(speaker, {}),
+            **avgResponse.get(speaker, {}),
+            **avgSelfSim.get(speaker, {}),
         }
 
     return combined
+

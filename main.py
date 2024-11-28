@@ -1,41 +1,32 @@
 import fathomPreprocessor
 import parameterizer
-import statAnalyzer
+import analyzer
 import json
 
-location = 'meetingTranscripts/marc_marek/11-06-24.txt'
-# location = 'meetingTranscripts/datafeel1/datafeelnov1meeting.txt'
-fileName = "test2.json"
+location = 'demoContent/demo_transcript.txt'
+fileName = 'test.json'
+topicString = 'first topic, another topic'
+topics = topicString.split(",")
 
-def generateJson(location, fileName = 'test.json', anonymize = True, showSummary = False):
+
+def outputJson(fileName = 'test.json', topicList = []):
 
     # set flag to true to anonymize speakers, set to false to preserve names
-    raw = fathomPreprocessor.prepFile(location, anonymize)
-    data = parameterizer.parameterize(raw[0], raw[1], raw[2])
+    raw = fathomPreprocessor.prepFile(location, anonymizeFlag=False)
+    data = parameterizer.parameterize(raw[0], raw[1], raw[2], topicList)
 
-    import json
     with open(fileName, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
-    if showSummary:
-        metrics = statAnalyzer.computeMetrics(data)
-        for i in metrics:
-            print(i)
+outputJson(fileName, topics)
 
+def runAnalysis(fileName = 'test.json'):
+    with open(fileName, "r") as json_file:
+        data = json.load(json_file)
 
-def defineTopics(location = 'test.json'):
-    from collections import Counter
-    with open(location, "r") as json_file:
-        parameterOutput = json.load(json_file)
+    output = analyzer.computeMetrics(data)
+    # analyzer.computeTopics(data)
 
-    similarities = [i['similarity'] for i in parameterOutput if 'similarity' in i]
-    flattened = [ idx1 for idx2 in similarities for idx1 in idx2 ]
-    words = [parameterOutput[id]['lemmas'].split() for id in flattened]
-    flattened = [ idx1 for idx2 in words for idx1 in idx2 ]
-    final = Counter(flattened).most_common()
+    return output
 
-    return final
-    
-    
-# generateJson(location, fileName, False, False)
-# print(defineTopics(fileName))
+# print(runAnalysis(fileName))
