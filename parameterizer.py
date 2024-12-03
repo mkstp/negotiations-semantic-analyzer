@@ -1,7 +1,6 @@
 #this module contains the functions for detecting the parameters for analysis in a given transcript
 import re
 import zlib
-import string
 import spacy
 from transformers import pipeline
 sentimentPipeline = pipeline("sentiment-analysis", model='cardiffnlp/twitter-roberta-base-sentiment-latest')
@@ -66,7 +65,7 @@ def questionDetector(sentence):
         else:
             output = "closedEnded"
     else:
-        output = "NaQ" #not a question
+        output = None #not a question
 
     return output
 
@@ -113,10 +112,7 @@ def matchTopic(transcriptList, topicList):
         maxIdx = similarities.argmax().item()
         score = similarities[0][maxIdx].item()
 
-        if score >= 0.09:
-            results.append(topicList[maxIdx])
-        else:
-            results.append("N/A")
+        results.append((topicList[maxIdx], score))
 
     return results
 
@@ -131,17 +127,13 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
     speechRates = speechRateDetector(timeList, transcriptList)
 
     #match topics to transcript list items
-    if topicList:
-        topics = matchTopic(transcriptList, topicList)
-    else:
-        topics = ["N/A" for i in transcriptList]
+    topics = matchTopic(transcriptList, topicList) if topicList else [("N/A", 0) for i in transcriptList]
 
     sentenceList = []
     count = 0
     
     for idx1, speaker in enumerate(speakerList):
 
-        topic = topics[idx1]
         delimiter= r'[.!?]|(?: But )'
         pattern = f'(.*?{delimiter})'
         transcript = re.findall(pattern, transcriptList[idx1])
@@ -157,17 +149,18 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
 
             data = {
                 'id': count,
-                'name': speaker,
                 'turn': idx1,
+                'name': speaker,
                 'previous': " " if idx1 == 0 else speakerList[idx1 - 1],
-                'topic': topic,
                 'text': sentence,
-                'wordLength': wordLength,
                 'airTime': time,
                 'wpm': speechRates[idx1],
+                'wordLength': wordLength,
                 'efficiency': compressionRatio,
                 'qType': questionDetector(sentence),
                 'nType': narrativeDetector(sentence),
+                'topic': topics[idx1][0],
+                'topicConfidence': topics[idx1][1],
                 'emotion': emotion[0],
                 'emotionConfidence': emotion[1]
             }
@@ -175,22 +168,38 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
             output.append(data)
 
     similarities = similarityDetector(sentenceList)
+    lastTurnIDs, thisTurnIDs, lastTurn = [], [], 0
 
-    lastTurnIDs = []
-    thisTurnIDS = []
-    lastTurn = 0
     for i in output:
-        if i['turn'] == lastTurn:
-            i['responseSimilarity'] = [(id, float(similarities[i['id']][id])) for id in lastTurnIDs]
-            i['selfSimilarity'] = [(id, float(similarities[i['id']][id])) for id in thisTurnIDS]
-            thisTurnIDS.append(i['id'])
+        if i['turn'] != lastTurn:
+            lastTurn, lastTurnIDs, thisTurnIDs = i['turn'], thisTurnIDs, []
+
+        # Calculate responseScores
+        responseScores = [(id, float(similarities[i['id']][id])) for id in lastTurnIDs]
+        if responseScores:  # Ensure there are scores to evaluate
+            maxResponsePair = max(responseScores, key=lambda x: x[1])  # Get (id, score) with max score
+            i['responsivenessID'], i['responsivenessScore'] = maxResponsePair[0], maxResponsePair[1]
         else:
-            lastTurn = i['turn']
-            lastTurnIDs = thisTurnIDS
-            thisTurnIDS = []
-            i['responseSimilarity'] = [(id, float(similarities[i['id']][id])) for id in lastTurnIDs]
-            i['selfSimilarity'] = [(id, float(similarities[i['id']][id])) for id in thisTurnIDS]
-            thisTurnIDS.append(i['id'])
+            i['responsivenessID'], i['responsivenessScore'] = None, None  # Handle cases with no scores
+
+        # Calculate selfScores
+        selfScores = [(id, float(similarities[i['id']][id])) for id in thisTurnIDs]
+        if selfScores:  # Ensure there are scores to evaluate
+            maxSelfPair = max(selfScores, key=lambda x: x[1])  # Get (id, score) with max score
+            i['coherenceID'], i['coherenceScore'] = maxSelfPair[0], maxSelfPair[1]
+        else:
+            i['coherenceID'], i['coherenceScore'] = None, None  # Handle cases with no scores
+
+        thisTurnIDs.append(i['id'])
+        
+        # Calculate repetitions
+        rep_scores = [
+            id
+            for id in range(i['id'] - 1, -1, -1)
+            if output[id]['name'] == i['name'] and float(similarities[i['id']][id]) >= 0.6
+        ]
+
+        i['repetitions'] = rep_scores
 
 
     return output
