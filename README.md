@@ -20,14 +20,13 @@ Using topic modeling and sentiment analysis, this project compares negotiators' 
 
 When managing negative emotion, my favorite analogy is firefighting: if someone directs emotional "fire" at you and you try to douse it immediately (e.g., saying "calm down" or "this isn’t a big deal"), the "fire" often spreads — manifesting as heightened anger or passive aggression. Instead, skilled firefighters establish a controlled burn, containing the fire and starving it of fuel. In emotional terms, this means acknowledging and validating the other person's feelings to contain and de-escalate their intensity.
 
-Practically, this involves avoiding dismissive phrases like "relax" or "you're overreacting." Instead, empathetic statements like "I see why you feel this way" or "That sounds really frustrating" signal understanding and create space for constructive dialogue. Matching emotions almost never requires mirroring their intensity or becoming negative yourself. Emotional alignment can often be achieved through calm yet empathetic responses, reinforcing your intent to connect rather than escalate. Effective de-escalation requires flexibility. Not all situations or individuals respond to the same techniques, and overly validating negative emotions may inadvertently reinforce them. 
+Practically, this involves avoiding dismissive phrases like "relax" or "you're overreacting." Instead, empathetic statements like "I see why you feel this way" or "That sounds really frustrating" signal understanding and create space for constructive dialogue. Effective de-escalation requires flexibility. Not all situations or individuals respond to the same techniques, and care must be taken not to overly validate negative emotions which may inadvertently reinforce them. 
 
 The software will indicate how emotions are distributed across various topics. By flagging negative emotion, we can design interventions to reframe them to positive interests. 
 
 ## Semantic similarity:
 
 - narrative type (first, second, third, passive)
-- responsiveness
 - question type (open-ended or closed-ended)
 
 Negotiations involve patterns of self-disclosure, questioning, and acknowledgment, with balanced proportions of these elements indicating healthy collaboration. A rule-based system labels narrative and question types, while responsiveness is assessed using a sentence similarity transformer model.
@@ -38,11 +37,16 @@ Responsiveness measures how closely a negotiator's statement relates to the prev
 
 Questioning patterns can indicate 
 
+## Semantic similarity continued:
+
+- responsiveness
+- coherence
+- repetitiveness
+
+
 ## Lexical similarity:
 
 - word choice patterns
-- coherence
-- repetitiveness
 
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/airtime.png?raw=true)

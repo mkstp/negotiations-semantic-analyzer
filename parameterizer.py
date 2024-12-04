@@ -116,6 +116,49 @@ def matchTopic(transcriptList, topicList):
 
     return results
 
+def responsivenessCoherenceDetector(output, similarityTensors):
+    lastTurnIDs, thisTurnIDs, lastTurn = [], [], 0
+    speakerLastTurnIDs = {}  # Maps speakers to their last turn's IDs
+
+    for i in output:
+        if i['turn'] != lastTurn:
+            lastTurn, lastTurnIDs, thisTurnIDs = i['turn'], thisTurnIDs, []
+        
+        speaker = i['name']  # Assumes each entry has a 'speaker' key
+        
+        # Calculate responseScores
+        responseScores = [(id, float(similarityTensors[i['id']][id])) for id in lastTurnIDs]
+        if responseScores:  # Ensure there are scores to evaluate
+            maxResponsePair = max(responseScores, key=lambda x: x[1])  # Get (id, score) with max score
+            i['responsivenessID'], i['responsivenessScore'] = maxResponsePair[0], maxResponsePair[1]
+        else:
+            i['responsivenessID'], i['responsivenessScore'] = None, None  # Handle cases with no scores
+
+        # Calculate selfScores based on the speaker's last turn's IDs
+        previousSpeakerIDs = speakerLastTurnIDs.get(speaker, [])  # Get last turn IDs for this speaker
+        selfScores = [(id, float(similarityTensors[i['id']][id])) for id in previousSpeakerIDs]
+        if selfScores:  # Ensure there are scores to evaluate
+            maxSelfPair = max(selfScores, key=lambda x: x[1])  # Get (id, score) with max score
+            i['coherenceID'], i['coherenceScore'] = maxSelfPair[0], maxSelfPair[1]
+        else:
+            i['coherenceID'], i['coherenceScore'] = None, None  # Handle cases with no scores
+
+        thisTurnIDs.append(i['id'])
+
+        # Update the last turn IDs for this speaker
+        speakerLastTurnIDs[speaker] = thisTurnIDs[:]
+
+         # Calculate repetitions
+        rep_scores = [
+            id
+            for id in range(i['id'] - 1, -1, -1)
+            if output[id]['name'] == i['name'] and float(similarityTensors[i['id']][id]) >= 0.6
+        ]
+
+        i['repetitions'] = rep_scores
+    
+    return output
+
 #main function
 def parameterize(speakerList, timeList, transcriptList, topicList):
     #speakerList: strings: names of each speaker
@@ -168,40 +211,8 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
             output.append(data)
 
     similarities = similarityDetector(sentenceList)
-    lastTurnIDs, thisTurnIDs, lastTurn = [], [], 0
-
-    for i in output:
-        if i['turn'] != lastTurn:
-            lastTurn, lastTurnIDs, thisTurnIDs = i['turn'], thisTurnIDs, []
-
-        # Calculate responseScores
-        responseScores = [(id, float(similarities[i['id']][id])) for id in lastTurnIDs]
-        if responseScores:  # Ensure there are scores to evaluate
-            maxResponsePair = max(responseScores, key=lambda x: x[1])  # Get (id, score) with max score
-            i['responsivenessID'], i['responsivenessScore'] = maxResponsePair[0], maxResponsePair[1]
-        else:
-            i['responsivenessID'], i['responsivenessScore'] = None, None  # Handle cases with no scores
-
-        # Calculate selfScores
-        selfScores = [(id, float(similarities[i['id']][id])) for id in thisTurnIDs]
-        if selfScores:  # Ensure there are scores to evaluate
-            maxSelfPair = max(selfScores, key=lambda x: x[1])  # Get (id, score) with max score
-            i['coherenceID'], i['coherenceScore'] = maxSelfPair[0], maxSelfPair[1]
-        else:
-            i['coherenceID'], i['coherenceScore'] = None, None  # Handle cases with no scores
-
-        thisTurnIDs.append(i['id'])
-        
-        # Calculate repetitions
-        rep_scores = [
-            id
-            for id in range(i['id'] - 1, -1, -1)
-            if output[id]['name'] == i['name'] and float(similarities[i['id']][id]) >= 0.6
-        ]
-
-        i['repetitions'] = rep_scores
-
-
+    output = responsivenessCoherenceDetector(output, similarities)
+    
     return output
 
 
