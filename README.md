@@ -8,27 +8,27 @@ Moreover, the project posits that similarity has a greater impact on negotiation
 
 Given a transcript and list of topics, the scripts generate a json file with each formattted object:
 
-'''
-    "sentenceID": 16,
-    "turn": 7,
-    "name": "Speaker B",
-    "previous": "Speaker A",
-    "text": "I mean, that's basically what I got from her a lot, right?",
-    "airTime": 4,
-    "wpm": 169,
-    "wordLength": 12,
-    "qType": "closedEnded",
-    "nType": "third",
-    "topic": " Communication",
-    "topicConfidence": 0.1834290325641632,
-    "emotion": "neutral",
-    "emotionConfidence": 0.7459942102432251,
-    "responsivenessID": 13,
-    "responsivenessScore": 0.20540665090084076,
-    "coherenceID": 11,
-    "coherenceScore": 0.23469233512878418,
-    "repetitionID": [2, 7]
-'''
+```
+"sentenceID": 16,
+"turn": 7,
+"name": "Speaker B",
+"previous": "Speaker A",
+"text": "I mean, that's basically what I got from her a lot, right?",
+"airTime": 4,
+"wpm": 169,
+"wordLength": 12,
+"qType": "closedEnded",
+"nType": "third",
+"topic": " Communication",
+"topicConfidence": 0.1834290325641632,
+"emotion": "neutral",
+"emotionConfidence": 0.7459942102432251,
+"responsivenessID": 13,
+"responsivenessScore": 0.20540665090084076,
+"coherenceID": 11,
+"coherenceScore": 0.23469233512878418,
+"repetitionID": [2, 7]
+```
 
 The json file is divided into individual sentences, where each turn represents a block of sentences where one speaker speaks. 
 
