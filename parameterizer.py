@@ -8,6 +8,7 @@ sentimentPipeline = pipeline("sentiment-analysis", model='cardiffnlp/twitter-rob
 from sentence_transformers import SentenceTransformer, util
 sentencePipeline = SentenceTransformer("all-MiniLM-L6-v2")
 
+
 #helper functions
 def speechRateDetector(timeList, transcriptList):
     #plotting how the speed of the conversation changed for each relationship  
@@ -76,9 +77,14 @@ def affectDetector(sentence):
     return (sentiment['label'], sentiment['score'])
 
 def summaryGenerator(sentence):
-    summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
-    summary = summarizer(sentence, min_length=0, do_sample=False)
-    return summary
+    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+    summary = summarizer(
+        sentence, 
+        max_length=100, 
+        min_length=80, 
+        do_sample=False)
+    
+    return summary[0]['summary_text']
 
 def redundancyDetector(sentence):
     #calculates the amount of redundancy in a given sentence
@@ -92,6 +98,7 @@ def sentenceTagger(sentence):
     nlp = spacy.load("en_core_web_sm")
     data = nlp(sentence)
     posTags = [(token.text, token.pos_, spacy.explain(token.pos_)) for token in data]
+
     return posTags
 
 def similarityDetector(sentenceList):
@@ -152,7 +159,7 @@ def responsivenessCoherenceDetector(output, similarityTensors):
         rep_scores = [
             id
             for id in range(i['id'] - 1, -1, -1)
-            if output[id]['name'] == i['name'] and float(similarityTensors[i['id']][id]) >= 0.6
+            if float(similarityTensors[i['id']][id]) >= 0.6
         ]
 
         i['repetitions'] = rep_scores
@@ -171,6 +178,9 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
 
     #match topics to transcript list items
     topics = matchTopic(transcriptList, topicList) if topicList else [("N/A", 0) for i in transcriptList]
+
+    #correlate filler word use
+
 
     sentenceList = []
     count = 0
@@ -214,6 +224,5 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
     output = responsivenessCoherenceDetector(output, similarities)
     
     return output
-
 
 

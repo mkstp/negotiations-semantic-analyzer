@@ -6,7 +6,7 @@ The hypothesis is that negotiators who speak at similar speeds and for comparabl
 
 Moreover, the project posits that similarity has a greater impact on negotiation success than adherence to objective communication benchmarks. For instance, it is more critical for negotiators to share similar speech rates than to both maintain a specific rate, and for their speaking turns to be similarly timed rather than falling within a predefined range.
 
-Given a transcript and list of topics, the scripts generate a json file with each formattted object:
+Given a transcript and list of topics, the scripts generate a json file with each formatted object:
 
 ```
 "sentenceID": 16,
@@ -67,11 +67,19 @@ The software will indicate how emotions are distributed across various topics. B
 - coherence
 - repetitiveness
 
-Responsiveness measures how closely a negotiator's statement relates to the previous one. High responsiveness indicates on-topic dialogue and acknowledgment, while low responsiveness suggests "talking past one another," common in arguments where positions conflict.
+Responsiveness measures how closely a negotiator's statement relates to the previous negotiators turn. High responsiveness indicates on-topic dialogue and acknowledgment, while low responsiveness suggests "talking past one another," common in arguments where positions conflict.
+
+Coherence measures how closely a negotiator's statement relates to their own last turn's statements. High coherence indicates the negotiator is following a strong semantic line of argument across turns.
+
+The idea is that in conversations where there is agreement, there will be both strong levels of coherence and strong levels of responsiveness from both negotiators relative to each other. I'm predicting that with these metrics, I will be able to identify points in the conversation where negotiators converge toward agreement, or diverge into conflict. 
+
+Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 semantic similarity match to what is crrently being said. A skilled negotiator will be able to paraphrase and synthesize multiple aspects of what someone has said over time. This will be showon on the repetitiveness index as hits on sentence which are spoken by the other person distributed in strategic locations throughout the conversation. Alternatively, speakers which show a high hit rate of repetitions on their own sentences are repeating the same points, this could be because they have a underlying unresolved narrative loop in their minds which underpins the need to repeat themselves. 
 
 ## Lexical similarity:
 
 - word choice patterns
+
+I'm going to try and detect stylistic and disfluency patterns and compare them across negotiators, with the idea that if negotiators can mimic each other's speaking style they will increase their changes of a collaborative outcome. This is a cutting edge research area and there is at this time not a clear path for parametirizing speaking style where suggestions for transforming one negotiators speaking style to another's can be reliably made. 
 
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/airtime.png?raw=true)
