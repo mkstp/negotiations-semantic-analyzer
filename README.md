@@ -75,6 +75,8 @@ The idea is that in conversations where there is agreement, there will be both s
 
 Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 semantic similarity match to what is crrently being said. A skilled negotiator will be able to paraphrase and synthesize multiple aspects of what someone has said over time. This will be showon on the repetitiveness index as hits on sentence which are spoken by the other person distributed in strategic locations throughout the conversation. Alternatively, speakers which show a high hit rate of repetitions on their own sentences are repeating the same points, this could be because they have a underlying unresolved narrative loop in their minds which underpins the need to repeat themselves. 
 
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/newplot.png?raw=true)
+
 ## Lexical similarity:
 
 - word choice patterns
@@ -82,14 +84,5 @@ Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 s
 I'm going to try and detect stylistic and disfluency patterns and compare them across negotiators, with the idea that if negotiators can mimic each other's speaking style they will increase their changes of a collaborative outcome. This is a cutting edge research area and there is at this time not a clear path for parametirizing speaking style where suggestions for transforming one negotiators speaking style to another's can be reliably made. 
 
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/airtime.png?raw=true)
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/speechrate.png?raw=true)
-
-
-
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/sentiment.png?raw=true)
-
-
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/congruence.png?raw=true)
 
