@@ -77,6 +77,8 @@ Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 s
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/newplot.png?raw=true)
 
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/emotionplot.png?raw=true)
+
 ## Lexical similarity:
 
 - word choice patterns

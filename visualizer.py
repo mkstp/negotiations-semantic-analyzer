@@ -1,16 +1,8 @@
 import pandas as pd
+import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from scipy.signal import savgol_filter
-
-def load_and_clean_data(file_path, max_id):
-    """
-    Load JSON data, filter by max ID, and clean NaN values.
-    """
-    df = pd.read_json(file_path)
-    df = df[df['id'] <= max_id]
-    df_clean = df.dropna(subset=['coherenceScore', 'responsivenessScore'])
-    return df_clean.sort_values(by=["name", "id"])
 
 def smooth_scores(data, score_column, window=12, polyorder=2):
     """
@@ -21,10 +13,16 @@ def smooth_scores(data, score_column, window=12, polyorder=2):
         return savgol_filter(data[score_column], window_length=window, polyorder=polyorder)
     return data[score_column]
 
-def create_subplots(data, smooth_colors):
+def plotResponsiveCoherence(df, max_id):
     """
     Create two vertically stacked subplots: one for coherence, one for responsiveness.
     """
+    df = df[df['id'] <= max_id]
+    df_clean = df.dropna(subset=['coherenceScore', 'responsivenessScore'])
+    data = df_clean.sort_values(by=["name", "id"])
+
+    smooth_colors = ['purple', 'orange', 'green', 'blue']
+
     # Initialize subplots
     fig = make_subplots(
         rows=2, cols=1,
@@ -61,12 +59,6 @@ def create_subplots(data, smooth_colors):
             row=2, col=1
         )
 
-    return fig
-
-def customize_and_show(fig):
-    """
-    Customize the layout of the subplots and display the figure.
-    """
     fig.update_layout(
         height=800,  # Adjust height to accommodate both graphs
         width=1000,  # Adjust width for better visualization
@@ -76,20 +68,41 @@ def customize_and_show(fig):
         yaxis_title="Coherence Score",
         yaxis2_title="Responsiveness Score"
     )
+
+    fig.show()
+
+    return fig
+
+def plotEmotionTopic(df):
+    # Aggregate data to calculate proportions
+    emotion_proportions = df.groupby(['name', 'topic', 'emotion']).size().reset_index(name='count')
+    topic_totals = emotion_proportions.groupby(['name', 'topic'])['count'].transform('sum')
+    emotion_proportions['proportion'] = emotion_proportions['count'] / topic_totals
+
+    # Plot stacked bar chart
+    fig = px.bar(
+        emotion_proportions,
+        x='topic',
+        y='proportion',
+        color='emotion',
+        barmode='stack',
+        facet_col='name',
+        title='Proportional Breakdown of Emotion Types by Speaker and Topic',
+        labels={'proportion': 'Proportion', 'topic': 'Topic', 'emotion': 'Emotion'},
+        color_discrete_map={"neutral": "blue", "negative": "red"}
+    )
+
+    # Show plot
     fig.show()
 
 def main():
     # File path and parameters
     file_path = 'marc_marek_11-06-24.json'
-    max_id = 400
-    smooth_colors = ['purple', 'orange', 'green', 'blue']
-
-    # Load and clean data
-    df_clean = load_and_clean_data(file_path, max_id)
+    df = pd.read_json(file_path)
 
     # Create and show plots
-    fig = create_subplots(df_clean, smooth_colors)
-    customize_and_show(fig)
+    plotResponsiveCoherence(df, 400)
+    plotEmotionTopic(df)
 
 # Run the main function
 if __name__ == "__main__":
