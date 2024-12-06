@@ -9,8 +9,8 @@ def smooth_scores(data, score_column, window=12, polyorder=2):
     Smooth a score column using the Savitzky-Golay filter.
     If there are not enough points for smoothing, return the raw scores.
     """
-    if len(data) >= window:
-        return savgol_filter(data[score_column], window_length=window, polyorder=polyorder)
+    # if len(data) >= window:
+    #     return savgol_filter(data[score_column], window_length=window, polyorder=polyorder)
     return data[score_column]
 
 def plotResponsiveCoherence(df, max_id):

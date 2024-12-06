@@ -8,7 +8,6 @@ sentimentPipeline = pipeline("sentiment-analysis", model='cardiffnlp/twitter-rob
 from sentence_transformers import SentenceTransformer, util
 sentencePipeline = SentenceTransformer("all-MiniLM-L6-v2")
 
-
 #helper functions
 def speechRateDetector(timeList, transcriptList):
     #plotting how the speed of the conversation changed for each relationship  
@@ -124,38 +123,43 @@ def matchTopic(transcriptList, topicList):
     return results
 
 def responsivenessCoherenceDetector(output, similarityTensors):
-    lastTurnIDs, thisTurnIDs, lastTurn = [], [], 0
-    speakerLastTurnIDs = {}  # Maps speakers to their last turn's IDs
+    lastTurn, lastTurnIDs, thisTurnIDs,  = 0, [], []
 
     for i in output:
         if i['turn'] != lastTurn:
             lastTurn, lastTurnIDs, thisTurnIDs = i['turn'], thisTurnIDs, []
-        
-        speaker = i['name']  # Assumes each entry has a 'speaker' key
-        
+
         # Calculate responseScores
         responseScores = [(id, float(similarityTensors[i['id']][id])) for id in lastTurnIDs]
         if responseScores:  # Ensure there are scores to evaluate
             maxResponsePair = max(responseScores, key=lambda x: x[1])  # Get (id, score) with max score
-            i['responsivenessID'], i['responsivenessScore'] = maxResponsePair[0], maxResponsePair[1]
+            i['responseID'], i['responseScore'] = maxResponsePair[0], maxResponsePair[1]
         else:
-            i['responsivenessID'], i['responsivenessScore'] = None, None  # Handle cases with no scores
+            i['responseID'], i['responseScore'] = None, None  # Handle cases with no scores
 
-        # Calculate selfScores based on the speaker's last turn's IDs
-        previousSpeakerIDs = speakerLastTurnIDs.get(speaker, [])  # Get last turn IDs for this speaker
-        selfScores = [(id, float(similarityTensors[i['id']][id])) for id in previousSpeakerIDs]
+        # Calculate selfScores based on the speaker's turn IDs
+        selfScores = [(id, float(similarityTensors[i['id']][id])) for id in thisTurnIDs]
         if selfScores:  # Ensure there are scores to evaluate
             maxSelfPair = max(selfScores, key=lambda x: x[1])  # Get (id, score) with max score
             i['coherenceID'], i['coherenceScore'] = maxSelfPair[0], maxSelfPair[1]
         else:
             i['coherenceID'], i['coherenceScore'] = None, None  # Handle cases with no scores
 
+        repScores = [(id, float(similarityTensors[i['id']][id])) for id in range(i['id'] - 1, -1, -1)]
+        if repScores: # Ensure there are scores to evaluate
+            maxRepPair = max(repScores, key=lambda x: x[1])  # Get (id, score) with max score
+            i['repID'], i['repScore'] = maxRepPair[0], maxRepPair[1]
+        else:
+            i['repID'], i['repScore'] = None, None  # Handle cases with no scores 
+
+        if i['repID']: # Ensure there are scores to evaluate
+            i['loopDistance'] = i['id'] - i['repID']
+        else:
+            i['loopDistance'] = None    
+
         thisTurnIDs.append(i['id'])
 
-        # Update the last turn IDs for this speaker
-        speakerLastTurnIDs[speaker] = thisTurnIDs[:]
-
-         # Calculate repetitions
+        # Calculate repetitions
         rep_scores = [
             id
             for id in range(i['id'] - 1, -1, -1)
@@ -163,8 +167,9 @@ def responsivenessCoherenceDetector(output, similarityTensors):
         ]
 
         i['repetitions'] = rep_scores
-    
+
     return output
+
 
 #main function
 def parameterize(speakerList, timeList, transcriptList, topicList):
@@ -208,8 +213,8 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
                 'text': sentence,
                 'airTime': time,
                 'wpm': speechRates[idx1],
-                'wordLength': wordLength,
-                'efficiency': compressionRatio,
+                # 'wordLength': wordLength, # unnecessary
+                # 'efficiency': compressionRatio, #the implementation of this one does not make sense
                 'qType': questionDetector(sentence),
                 'nType': narrativeDetector(sentence),
                 'topic': topics[idx1][0],
@@ -224,5 +229,3 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
     output = responsivenessCoherenceDetector(output, similarities)
     
     return output
-
-
