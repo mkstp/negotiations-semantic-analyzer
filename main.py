@@ -1,7 +1,8 @@
 import fathomPreprocessor
 import parameterizer
-import analyzer
+import visualizer
 import json
+import pandas as pd
 
 location = 'demoContent/demo_transcript.txt'
 fileName = 'test.json'
@@ -9,7 +10,11 @@ topicString = 'first topic, another topic'
 
 location = 'meetingTranscripts/marek/11-06-24.txt'
 fileName = 'marc_marek_11-06-24.json'
-topicString = 'Relationships, Communication, Technology, Men\'s Group'
+topicString = 'Relationships, Communication, Technology, Personal Development'
+
+# location = 'meetingTranscripts/brady/11-28-2024.txt'
+fileName = 'marc_brady_11-08-2024.json'
+# topicString = 'Japan, Sea Animals, Food, Climate'
 
 def outputJson(fileName = 'test.json', topicString = ""):
 
@@ -22,15 +27,13 @@ def outputJson(fileName = 'test.json', topicString = ""):
     with open(fileName, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
-outputJson(fileName, topicString)
+def showReport(fileName = 'test.json'):
+    df = pd.read_json(fileName)
 
-def runAnalysis(fileName = 'test.json'):
-    with open(fileName, "r") as json_file:
-        data = json.load(json_file)
+    # Create and show plots
+    visualizer.plotResponsiveCoherence(df, 7)
+    visualizer.plotScoresWithRegression(df)
+    visualizer.plotEmotionTopic(df)
 
-    output = analyzer.computeMetrics(data)
-    # analyzer.computeTopics(data)
-
-    return output
-
-# print(runAnalysis(fileName))
+# outputJson(fileName, topicString)
+showReport(fileName)

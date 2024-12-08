@@ -75,9 +75,15 @@ The idea is that in conversations where there is agreement, there will be both s
 
 Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 semantic similarity match to what is crrently being said. A skilled negotiator will be able to paraphrase and synthesize multiple aspects of what someone has said over time. This will be showon on the repetitiveness index as hits on sentence which are spoken by the other person distributed in strategic locations throughout the conversation. Alternatively, speakers which show a high hit rate of repetitions on their own sentences are repeating the same points, this could be because they have a underlying unresolved narrative loop in their minds which underpins the need to repeat themselves. 
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/newplot.png?raw=true)
-
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/emotionplot.png?raw=true)
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/coherence_time.png?raw=true)
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/responsiveness_time.png?raw=true)
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter.png?raw=true)
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter_alt.png?raw=true)
 
 ## Lexical similarity:
 

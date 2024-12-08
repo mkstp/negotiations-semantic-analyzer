@@ -1,72 +1,84 @@
-import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
 from scipy.signal import savgol_filter
 
-def smooth_scores(data, score_column, window=12, polyorder=2):
-    """
-    Smooth a score column using the Savitzky-Golay filter.
-    If there are not enough points for smoothing, return the raw scores.
-    """
-    # if len(data) >= window:
-    #     return savgol_filter(data[score_column], window_length=window, polyorder=polyorder)
-    return data[score_column]
+def plotResponsiveCoherence(df, windowLength):
 
-def plotResponsiveCoherence(df, max_id):
-    """
-    Create two vertically stacked subplots: one for coherence, one for responsiveness.
-    """
-    df = df[df['id'] <= max_id]
-    df_clean = df.dropna(subset=['coherenceScore', 'responsivenessScore'])
-    data = df_clean.sort_values(by=["name", "id"])
+    smoothCoherence = savgol_filter(df['coherenceScore'], window_length=windowLength, polyorder=2)
 
-    smooth_colors = ['purple', 'orange', 'green', 'blue']
+    smoothResponse = savgol_filter(df['responseScore'], window_length=windowLength, polyorder=2)
 
-    # Initialize subplots
-    fig = make_subplots(
-        rows=2, cols=1,
-        shared_xaxes=True,
-        vertical_spacing=0.1,
-        subplot_titles=("Smoothed Coherence Scores by Speaker", "Smoothed Responsiveness Scores by Speaker")
-    )
 
-    # Plot smoothed coherence scores
-    for idx, (name, group) in enumerate(data.groupby('name')):
-        smoothed_coherence = smooth_scores(group, 'coherenceScore')
-        fig.add_trace(
-            go.Scatter(
-                x=group['id'],
-                y=smoothed_coherence,
-                mode='lines',
-                line=dict(color=smooth_colors[idx % len(smooth_colors)], width=3),
-                name=f'{name} Coherence'
-            ),
-            row=1, col=1
-        )
+    fig1 = px.line(df, x="id", y=smoothCoherence, title='Coherence', color='name')
+    fig2 = px.line(df, x="id", y=smoothResponse, title='Responsiveness', color='name')
 
-    # Plot smoothed responsiveness scores
-    for idx, (name, group) in enumerate(data.groupby('name')):
-        smoothed_responsiveness = smooth_scores(group, 'responsivenessScore')
-        fig.add_trace(
-            go.Scatter(
-                x=group['id'],
-                y=smoothed_responsiveness,
-                mode='lines',
-                line=dict(color=smooth_colors[idx % len(smooth_colors)], width=3, dash='solid'),
-                name=f'{name} Responsiveness'
-            ),
-            row=2, col=1
-        )
-
-    fig.update_layout(
-        height=800,  # Adjust height to accommodate both graphs
+    fig1.update_layout(
+        height=500,  # Adjust height to accommodate both graphs
         width=1000,  # Adjust width for better visualization
         showlegend=True,
-        title="Smoothed Coherence and Responsiveness Scores by Speaker",
+        title="Smoothed Coherence Scores by Speaker",
         xaxis_title="ID",
         yaxis_title="Coherence Score",
-        yaxis2_title="Responsiveness Score"
+    )
+
+    fig2.update_layout(
+        height=500,  # Adjust height to accommodate both graphs
+        width=1000,  # Adjust width for better visualization
+        showlegend=True,
+        title="Smoothed Responsiveness Scores by Speaker",
+        xaxis_title="ID",
+        yaxis_title="Responsiveness Score",
+    )
+
+    fig1.show()
+    fig2.show()
+
+def plotScoresWithRegression(df):
+
+    # Group the data by name
+    grouped = df.groupby('name')
+
+    # Create a scatter plot
+    fig = go.Figure()
+
+    for name, group in grouped:
+
+        # Drop NaN values for the regression analysis
+        group = group.dropna(subset=['coherenceScore', 'responseScore'])
+
+        # Add scatter points for each name
+        fig.add_trace(go.Scatter(
+            x=group['coherenceScore'],
+            y=group['responseScore'],
+            mode='markers',
+            name=f'{name} - Points'
+        ))
+
+        # Perform linear regression
+        X = group['coherenceScore'].values.reshape(-1, 1)
+        y = group['responseScore'].values
+        model = LinearRegression().fit(X, y)
+        y_pred = model.predict(X)
+
+        # Add the regression line for each name
+        fig.add_trace(go.Scatter(
+            x=group['coherenceScore'],
+            y=y_pred,
+            mode='lines',
+            name=f'{name} - Regression Line'
+        ))
+
+    # Update the layout for better visualization
+    fig.update_layout(
+        height=500,  # Adjust height to accommodate both graphs
+        width=800,  # Adjust width for better visualization
+        title="Scatter Plot with Linear Regression Lines",
+        xaxis_title="Coherence Score",
+        yaxis_title="Responsiveness Score",
+        legend_title="Names",
+        template="plotly_white"
     )
 
     fig.show()
@@ -94,16 +106,3 @@ def plotEmotionTopic(df):
 
     # Show plot
     fig.show()
-
-def main():
-    # File path and parameters
-    file_path = 'marc_marek_11-06-24.json'
-    df = pd.read_json(file_path)
-
-    # Create and show plots
-    plotResponsiveCoherence(df, 400)
-    plotEmotionTopic(df)
-
-# Run the main function
-if __name__ == "__main__":
-    main()

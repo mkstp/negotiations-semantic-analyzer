@@ -123,11 +123,13 @@ def matchTopic(transcriptList, topicList):
     return results
 
 def responsivenessCoherenceDetector(output, similarityTensors):
-    lastTurn, lastTurnIDs, thisTurnIDs,  = 0, [], []
+# this function will break down for meetings with more than two people
+
+    lastTurn, myLastTurnIDs, lastTurnIDs, thisTurnIDs,  = 0, [], [], []
 
     for i in output:
         if i['turn'] != lastTurn:
-            lastTurn, lastTurnIDs, thisTurnIDs = i['turn'], thisTurnIDs, []
+            lastTurn, myLastTurnIDs, lastTurnIDs, thisTurnIDs = i['turn'], lastTurnIDs, thisTurnIDs, []
 
         # Calculate responseScores
         responseScores = [(id, float(similarityTensors[i['id']][id])) for id in lastTurnIDs]
@@ -138,7 +140,7 @@ def responsivenessCoherenceDetector(output, similarityTensors):
             i['responseID'], i['responseScore'] = None, None  # Handle cases with no scores
 
         # Calculate selfScores based on the speaker's turn IDs
-        selfScores = [(id, float(similarityTensors[i['id']][id])) for id in thisTurnIDs]
+        selfScores = [(id, float(similarityTensors[i['id']][id])) for id in (thisTurnIDs + myLastTurnIDs)]
         if selfScores:  # Ensure there are scores to evaluate
             maxSelfPair = max(selfScores, key=lambda x: x[1])  # Get (id, score) with max score
             i['coherenceID'], i['coherenceScore'] = maxSelfPair[0], maxSelfPair[1]
@@ -150,12 +152,7 @@ def responsivenessCoherenceDetector(output, similarityTensors):
             maxRepPair = max(repScores, key=lambda x: x[1])  # Get (id, score) with max score
             i['repID'], i['repScore'] = maxRepPair[0], maxRepPair[1]
         else:
-            i['repID'], i['repScore'] = None, None  # Handle cases with no scores 
-
-        if i['repID']: # Ensure there are scores to evaluate
-            i['loopDistance'] = i['id'] - i['repID']
-        else:
-            i['loopDistance'] = None    
+            i['repID'], i['repScore'] = None, None  # Handle cases with no scores   
 
         thisTurnIDs.append(i['id'])
 
