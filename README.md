@@ -53,6 +53,8 @@ Questioning patterns can indicate
 - topic
 - emotion (positive, neutral, negative)
 
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/emotionplot.png?raw=true)
+
 Using topic modeling and sentiment analysis, this project compares negotiators' emotional expressions, hypothesizing that shared positivity around specific topics increases the likelihood of agreement. Conflict resolution research supports this, suggesting that de-escalating negative emotions involves acknowledging and aligning with them before reframing to positivity, fostering collaboration and resolution.
 
 When managing negative emotion, my favorite analogy is firefighting: if someone directs emotional "fire" at you and you try to douse it immediately (e.g., saying "calm down" or "this isn’t a big deal"), the "fire" often spreads — manifesting as heightened anger or passive aggression. Instead, skilled firefighters establish a controlled burn, containing the fire and starving it of fuel. In emotional terms, this means acknowledging and validating the other person's feelings to contain and de-escalate their intensity.
@@ -69,21 +71,39 @@ The software will indicate how emotions are distributed across various topics. B
 
 Responsiveness measures how closely a negotiator's statement relates to the previous negotiators turn. High responsiveness indicates on-topic dialogue and acknowledgment, while low responsiveness suggests "talking past one another," common in arguments where positions conflict.
 
-Coherence measures how closely a negotiator's statement relates to their own last turn's statements. High coherence indicates the negotiator is following a strong semantic line of argument across turns.
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/responsiveness_time.png?raw=true)
 
-The idea is that in conversations where there is agreement, there will be both strong levels of coherence and strong levels of responsiveness from both negotiators relative to each other. I'm predicting that with these metrics, I will be able to identify points in the conversation where negotiators converge toward agreement, or diverge into conflict. 
-
-Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 semantic similarity match to what is crrently being said. A skilled negotiator will be able to paraphrase and synthesize multiple aspects of what someone has said over time. This will be showon on the repetitiveness index as hits on sentence which are spoken by the other person distributed in strategic locations throughout the conversation. Alternatively, speakers which show a high hit rate of repetitions on their own sentences are repeating the same points, this could be because they have a underlying unresolved narrative loop in their minds which underpins the need to repeat themselves. 
-
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/emotionplot.png?raw=true)
+Coherence measures how closely a negotiator's statement relates to their own statements including from the previous turn. High coherence indicates the negotiator is following a strong semantic line of argument across turns.
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/coherence_time.png?raw=true)
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/responsiveness_time.png?raw=true)
+The idea is that in conversations where there is agreement, there will be both strong levels of coherence and strong levels of responsiveness from both negotiators relative to each other. I'm predicting that with these metrics, I will be able to identify points in the conversation where negotiators converge toward agreement, or diverge into conflict. 
+
+### Relationships between Responsiveness and Coherence
+
+High Responsiveness, High Coherence:
+Occurs when one negotiator responds with clear semantic alignment to the other’s statements, fully exploring or building on their ideas. In extreme cases, this might involve repeating the other person’s points verbatim to emphasize understanding or foster connection.
+
+High Responsiveness, Low Coherence:
+Happens when responses address the most recent statement but lack continuity with earlier discussion. This can seem like abandoning a previous point to focus solely on the latest input.
+
+Low Responsiveness, High Coherence:
+Seen when a negotiator reiterates their earlier points, sometimes to clarify or emphasize them if they feel unheard. This can either reinforce arguments constructively or be used adversarially to ignore the other’s input.
+
+Low Responsiveness, Low Coherence:
+Occurs when the conversation abruptly shifts to an unrelated topic, either strategically or due to disorganization. It can reflect a breakdown in conversation flow or deliberate topic avoidance.
+
+Each strategy can be used constructively or destructively, and effective negotiation often involves a mix of all these approaches.
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter.png?raw=true)
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter_alt.png?raw=true)
+
+
+Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 semantic similarity match to what is crrently being said. A skilled negotiator will be able to paraphrase and synthesize multiple aspects of what someone has said over time. This will be showon on the repetitiveness index as hits on sentence which are spoken by the other person distributed in strategic locations throughout the conversation. Alternatively, speakers which show a high hit rate of repetitions on their own sentences are repeating the same points, this could be because they have a underlying unresolved narrative loop in their minds which underpins the need to repeat themselves. 
+
+
+
 
 ## Lexical similarity:
 
