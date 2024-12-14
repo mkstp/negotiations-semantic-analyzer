@@ -1,6 +1,5 @@
 #this module contains the functions for detecting the parameters for analysis in a given transcript
 import re
-import zlib
 import spacy
 from transformers import pipeline
 sentimentPipeline = pipeline("sentiment-analysis", model='cardiffnlp/twitter-roberta-base-sentiment-latest')
@@ -84,14 +83,6 @@ def summaryGenerator(sentence):
         do_sample=False)
     
     return summary[0]['summary_text']
-
-def redundancyDetector(sentence):
-    #calculates the amount of redundancy in a given sentence
-    originalSize = len(sentence.encode('utf-8'))
-    compressedSize = len(zlib.compress(sentence.encode('utf-8')))
-    ratio = min(compressedSize / originalSize, 1)
-
-    return ratio
 
 def sentenceTagger(sentence):
     nlp = spacy.load("en_core_web_sm")
@@ -199,8 +190,6 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
                 continue
             sentenceList.append(sentence)
             emotion = affectDetector(sentence)
-            compressionRatio = redundancyDetector(sentence)
-            wordLength = len(sentence.split())
 
             data = {
                 'id': count,
@@ -210,8 +199,6 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
                 'text': sentence,
                 'airTime': time,
                 'wpm': speechRates[idx1],
-                # 'wordLength': wordLength, # unnecessary
-                # 'efficiency': compressionRatio, #the implementation of this one does not make sense
                 'qType': questionDetector(sentence),
                 'nType': narrativeDetector(sentence),
                 'topic': topics[idx1][0],

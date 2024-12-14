@@ -1,7 +1,6 @@
 #this model takes in json data from a parameterized transcript and does analysis on the parameters
 from collections import defaultdict
 import torch
-import numpy as np
 
 #deals with tensor filtering
 def maskFilter(tensor, matchThreshold=0.45):
@@ -83,36 +82,16 @@ def avgSelfSimilarity(prameterOutput):
 
     return {speaker: {f"average self repetition": sum(rates) / len(rates)} for speaker, rates in rateData.items()}
 
-def computeMetrics(parameterOutput):
+def computeMetrics(df):
 
-    airTime = compareSpeakers(parameterOutput, 'airTime')
-    wordsSpoken = compareSpeakers(parameterOutput, 'wordLength')
-    questions = tallySpeakerParam(parameterOutput, 'qType', ['openEnded', 'closedEnded'])
-    narrative = tallySpeakerParam(parameterOutput, 'nType', ['first', 'second', 'third', 'passive'])
-    emotions = tallySpeakerParam(parameterOutput, 'emotion', ['positive', 'neutral', 'negative'])
-    avgRates = avgSpeakerParam(parameterOutput, 'wpm')
-    avgAirTime = avgSpeakerParam(parameterOutput, 'airTime')
-    avgRedundancy = avgSpeakerParam(parameterOutput, 'efficiency')
-    avgResponse = avgResponsiveness(parameterOutput)
-    avgSelfSim = avgSelfSimilarity(parameterOutput)
+    avgAirTime = df.groupby(['name', 'turn'])['airTime'].sum().groupby('name').mean()
+    avgWPM = df.groupby('name')['wpm'].mean()
+    avgResponse = df.groupby('name')['responseScore'].mean()
+    avgCoherence = df.groupby('name')['coherenceScore'].mean()
+    countQuestions = df.groupby(['name', 'qType'])['qType'].count()
+    countNarrative = df.groupby(['name', 'nType'])['nType'].count()
+    countEmotion = df.groupby(['name', 'emotion'])['emotion'].count()
+    countTopic = df.groupby(['name', 'topic'])['topic'].count()
 
-    speakers = set(airTime.keys())
-
-    # Combine all metrics into a single dictionary
-    combined = {}
-    for speaker in speakers:
-        combined[speaker] = {
-            **airTime.get(speaker, {}),
-            **wordsSpoken.get(speaker, {}),
-            **questions.get(speaker, {}),
-            **narrative.get(speaker, {}),
-            **emotions.get(speaker, {}),
-            **avgRates.get(speaker, {}),
-            **avgAirTime.get(speaker, {}),
-            **avgRedundancy.get(speaker, {}),
-            **avgResponse.get(speaker, {}),
-            **avgSelfSim.get(speaker, {}),
-        }
-
-    return combined
+    return None
 
