@@ -50,40 +50,33 @@ def tallySpeakerParam(parameterOutput, parameter, categories):
     return proportions
 
 #averages within individual speaker parameters
-def avgSpeakerParam(parameterOutput, parameter):
-    #Compute the average in a turn
-    rateData = defaultdict(list)
+def responseCoverage(df):
+    # Group statements by 'name' and count unique 'id's for each name
+    statement_counts = df.groupby('previous')['id'].nunique()
 
-    for entry in parameterOutput:
-        speaker = entry['name']
-        rateData[speaker].append(entry[parameter])
+    print(statement_counts)
 
-    return {speaker: {f"average{parameter}": sum(rates) / len(rates)} for speaker, rates in rateData.items()}
+    # Group responses by 'name' and count unique 'responseID's for each name
+    response_counts = df.groupby('name')['responseID'].nunique()
 
-def avgResponsiveness(prameterOutput):
-    rateData = defaultdict(list)
+    print(response_counts)
 
-    for entry in prameterOutput:
-        speaker = entry['name']
-        if entry['responseSimilarity']:
-            maxResponseScore = max([i[1] for i in entry['responseSimilarity']])
-            rateData[speaker].append(maxResponseScore)
+    result = {}
 
-    return {speaker: {f"average responsiveness": sum(rates) / len(rates)} for speaker, rates in rateData.items()}
+    # Compute proportions of responses to their statements
+    for name in statement_counts.index:  # Iterate over unique 'name's
+        statement_count = statement_counts.get(name, 0)
+        response_count = response_counts.get(name, 0)
 
-def avgSelfSimilarity(prameterOutput):
-    rateData = defaultdict(list)
+        if statement_count == 0:  # Avoid division by zero
+            result[name] = 0
+        else:
+            result[name] = response_count / statement_count  # Use floating-point division
 
-    for entry in prameterOutput:
-        speaker = entry['name']
-        if entry['selfSimilarity']:
-            maxSelfRepetitionScore = max([i[1] for i in entry['selfSimilarity']])
-            rateData[speaker].append(maxSelfRepetitionScore)
-
-    return {speaker: {f"average self repetition": sum(rates) / len(rates)} for speaker, rates in rateData.items()}
+    return result
 
 def computeMetrics(df):
-
+    # Calculating the metrics
     avgAirTime = df.groupby(['name', 'turn'])['airTime'].sum().groupby('name').mean()
     avgWPM = df.groupby('name')['wpm'].mean()
     avgResponse = df.groupby('name')['responseScore'].mean()
@@ -92,6 +85,23 @@ def computeMetrics(df):
     countNarrative = df.groupby(['name', 'nType'])['nType'].count()
     countEmotion = df.groupby(['name', 'emotion'])['emotion'].count()
     countTopic = df.groupby(['name', 'topic'])['topic'].count()
-
-    return None
+    
+    # Initializing the dictionary
+    result = {}
+    
+    # Looping through unique names
+    for name in df['name'].unique():
+        # Creating nested dictionary for each name
+        result[name] = {
+            'avgAirTime': avgAirTime.get(name, None),
+            'avgWPM': avgWPM.get(name, None),
+            'avgResponse': avgResponse.get(name, None),
+            'avgCoherence': avgCoherence.get(name, None),
+            'countQuestions': countQuestions.loc[name].to_dict() if name in countQuestions else {},
+            'countNarrative': countNarrative.loc[name].to_dict() if name in countNarrative else {},
+            'countEmotion': countEmotion.loc[name].to_dict() if name in countEmotion else {},
+            'countTopic': countTopic.loc[name].to_dict() if name in countTopic else {},
+        }
+    
+    return result
 

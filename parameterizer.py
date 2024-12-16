@@ -138,7 +138,7 @@ def responsivenessCoherenceDetector(output, similarityTensors):
         else:
             i['coherenceID'], i['coherenceScore'] = None, None  # Handle cases with no scores
 
-        repScores = [(id, float(similarityTensors[i['id']][id])) for id in range(i['id'] - 1, -1, -1)]
+        repScores = [(id, float(similarityTensors[i['id']][id])) for id in range(i['id'] - len(thisTurnIDs) - 1, -1, -1)]
         if repScores: # Ensure there are scores to evaluate
             maxRepPair = max(repScores, key=lambda x: x[1])  # Get (id, score) with max score
             i['repID'], i['repScore'] = maxRepPair[0], maxRepPair[1]
@@ -150,7 +150,7 @@ def responsivenessCoherenceDetector(output, similarityTensors):
         # Calculate repetitions
         rep_scores = [
             id
-            for id in range(i['id'] - 1, -1, -1)
+            for id in range(i['id'] - len(thisTurnIDs) - 1, -1, -1)
             if float(similarityTensors[i['id']][id]) >= 0.6
         ]
 
