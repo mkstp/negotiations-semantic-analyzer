@@ -32,10 +32,10 @@ def showReport(fileName = 'test.json', filter=None):
     # Create and show plots
 
     visualizer.plotWPMAirTime(df, filter)
-    visualizer.plotCoherenceResponsiveness(df, filter)
-    visualizer.plot_response_and_coherence_frequency(df, filter)
     visualizer.plotNarrativeEmotion(df, filter)
-    # visualizer.generate_scatter_plot(df, filter)
+    visualizer.plotCoherenceResponsiveness(df, filter)
+    visualizer.analyze_cluster_proportions_with_distances(df, filter)
+    visualizer.plot_response_and_coherence_frequency(df, filter)
 
 location = 'demoContent/demo_transcript.txt'
 fileName = 'demoContent/demo_parameterized.json'

@@ -1,5 +1,7 @@
 # CONVO ANALYZER
 
+working paper title: "Echoes and Omissions: A Semantic Similarity Analysis of Coherence, Responsiveness, and Repetition in Negotiation Dynamics"
+
 This project investigates how communication similarity influences negotiation outcomes, using time-stamped, speaker-identified transcripts to measure both procedural and semantic alignment. The goal is to develop interventions that enhance collaboration between negotiators.
 
 The hypothesis is that negotiators who speak at similar speeds and for comparable durations achieve more collaborative outcomes. Conversely, significant disparities in speech rate or speaking time may lead to less favorable results.
