@@ -26,7 +26,7 @@ def showReport(fileName = 'test.json', filter=None):
     df = pd.read_json(fileName)
 
     metrics = analyzer.computeMetrics(df)
-    print(analyzer.responseCoverage(df))
+    # print(analyzer.responseCoverage(df))
     print(metrics)
 
     # Create and show plots
@@ -41,6 +41,6 @@ location = 'demoContent/demo_transcript.txt'
 fileName = 'demoContent/demo_parameterized.json'
 topicString = "Software, Links, Recording"
 
-output = analyzeTranscript(location, topicString, False)
-outputJson(output, fileName)
+# output = analyzeTranscript(location, topicString, False)
+# outputJson(output, fileName)
 showReport(fileName)
