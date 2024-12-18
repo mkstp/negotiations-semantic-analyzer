@@ -1,7 +1,4 @@
-import json
-import pandas as pd
-
-def analyzeTranscript(location='demoContent/demo_transcript.txt', topicString = "", anonymizeFlag=False):
+def analyzeTranscript(location='demoContent/demo_transcript.txt', topicString = " ", anonymizeFlag=False):
     import fathomPreprocessor
     import parameterizer
 
@@ -15,6 +12,7 @@ def analyzeTranscript(location='demoContent/demo_transcript.txt', topicString = 
     return data
 
 def outputJson(output, fileName = 'test.json'):
+    import json
 
     with open(fileName, "w") as json_file:
         json.dump(output, json_file, indent=4)
@@ -22,12 +20,13 @@ def outputJson(output, fileName = 'test.json'):
 def showReport(fileName = 'test.json', filter=None):
     import analyzer
     import visualizer
+    import pandas as pd
 
     df = pd.read_json(fileName)
 
     metrics = analyzer.computeMetrics(df)
     # print(analyzer.responseCoverage(df))
-    print(metrics)
+    # print(metrics)
 
     # Create and show plots
 
@@ -37,10 +36,11 @@ def showReport(fileName = 'test.json', filter=None):
     visualizer.analyze_cluster_proportions_with_distances(df, filter)
     visualizer.plot_response_and_coherence_frequency(df, filter)
 
-location = 'demoContent/demo_transcript.txt'
-fileName = 'demoContent/demo_parameterized.json'
-topicString = "Software, Links, Recording"
 
-# output = analyzeTranscript(location, topicString, False)
-# outputJson(output, fileName)
+location = 'meetingTranscripts/negotiation_roleplay/d_b_12-10-2024.txt'
+fileName = 'meetingTranscripts/negotiation_roleplay/d_b_12-10-2024.json'
+topicString = 'algae, snails, elders, enzymes, economy, culture, Pfizer, alzheimer\'s, mother'
+
+output = analyzeTranscript(location, topicString, False)
+outputJson(output, fileName)
 showReport(fileName)

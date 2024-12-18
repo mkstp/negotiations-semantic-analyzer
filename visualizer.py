@@ -187,8 +187,8 @@ def plot_response_and_coherence_frequency(df, topic_filter=None):
     score_coherence_df = df.groupby("coherenceID")["coherenceScore"].mean().reset_index()
 
     # Group by name and repeatID for bar chart frequency
-    freq_repeat_df = df.groupby(["name", "repID"]).size().reset_index(name="frequency")
-    score_repeat_df = df.groupby(["name", "repID"])["repScore"].mean().reset_index()
+    freq_repeat_df = df.groupby(["name", "repeatID"]).size().reset_index(name="frequency")
+    score_repeat_df = df.groupby(["name", "repeatID"])["repeatScore"].mean().reset_index()
 
     # Generate consistent color mapping for names
     unique_names = df["name"].unique()
@@ -274,7 +274,7 @@ def plot_response_and_coherence_frequency(df, topic_filter=None):
         show_legend = name not in names_in_legend
         fig.add_trace(
             go.Bar(
-                x=filtered_data["repID"],
+                x=filtered_data["repeatID"],
                 y=filtered_data["frequency"],
                 name=name,
                 marker=dict(color=color_mapping[name]),
@@ -291,8 +291,8 @@ def plot_response_and_coherence_frequency(df, topic_filter=None):
         show_legend = name not in names_in_legend
         fig.add_trace(
             go.Scatter(
-                x=filtered_data["repID"],
-                y=filtered_data["repScore"],
+                x=filtered_data["repeatID"],
+                y=filtered_data["repeatScore"],
                 mode='lines',
                 name=f"{name} - Average Repeat Score",
                 line=dict(width=1),
@@ -322,12 +322,10 @@ def plot_response_and_coherence_frequency(df, topic_filter=None):
 def analyze_cluster_proportions_with_distances(df, topic_filter=None):
     """
     Groups the dataframe by 'name' and classifies 'coherenceScore'-'responseScore' pairs
-    into four clusters (Reactive, Evasive, Directive, Integrative). 
+    into four clusters (Accommodating, Discontinuous, Directive, Integrative). 
     Displays two subplots:
         1. Proportion of points in each cluster grouped by name.
-        2. Average distance of points from the extremities of the clusters.
-
-    The same colors are used across both subplots, and duplicate names in the legend are removed.
+        2. Average distance of points from the cluster central boundary (x_boundary, y_boundary).
 
     Parameters:
         df (pd.DataFrame): DataFrame containing 'name', 'coherenceScore', and 'responseScore'.
@@ -336,7 +334,7 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
     # Optionally filter the DataFrame by topic
     if topic_filter:
         df = df[df['topic'] == topic_filter]
-        
+
     # Ensure the required columns exist
     if not {'name', 'coherenceScore', 'responseScore'}.issubset(df.columns):
         raise ValueError("The DataFrame must contain 'name', 'coherenceScore', and 'responseScore' columns.")
@@ -345,14 +343,7 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
     x_boundary = 0.35
     y_boundary = 0.35
 
-    # Map quadrants to cluster labels and their extremity coordinates
-    cluster_extremities = {
-        'Accommodating': (0, 0.8),    # Top-Left
-        'Discontinuous': (0, 0),     # Bottom-Left
-        'Directive': (0.8, 0),   # Bottom-Right
-        'Integrative': (0.8, 0.8)  # Top-Right
-    }
-
+    # Map quadrants to cluster labels
     def classify_quadrant(row):
         if row['coherenceScore'] < x_boundary and row['responseScore'] > y_boundary:
             return 'Accommodating'
@@ -371,15 +362,14 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
     total_points = cluster_counts.groupby('name')['count'].transform('sum')
     cluster_counts['proportion'] = cluster_counts['count'] / total_points
 
-    # Calculate distances to corner extremities
+    # Calculate distances to the central boundary
     def calculate_distance(row):
-        corner_x, corner_y = cluster_extremities[row['cluster']]
-        return (1 - np.sqrt((row['coherenceScore'] - corner_x) ** 2 + (row['responseScore'] - corner_y) ** 2)) # return the remainder
+        return np.sqrt((row['coherenceScore'] - x_boundary) ** 2 + (row['responseScore'] - y_boundary) ** 2)
 
-    df['distance_to_extremity'] = df.apply(calculate_distance, axis=1)
+    df['distance_to_boundary'] = df.apply(calculate_distance, axis=1)
 
     # Compute average distances grouped by name and cluster
-    avg_distances = df.groupby(['name', 'cluster'])['distance_to_extremity'].mean().reset_index()
+    avg_distances = df.groupby(['name', 'cluster'])['distance_to_boundary'].mean().reset_index()
 
     # Define consistent colors for each name
     unique_names = df['name'].unique()
@@ -391,7 +381,7 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
         rows=2, cols=1,
         subplot_titles=[
             "Proportion of Points in Each Cluster",
-            "Strength of Points to Cluster Extremities"
+            "Average Distance of Point Clusters to Boundary Center"
         ],
         vertical_spacing=0.2
     )
@@ -416,7 +406,7 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
         fig.add_trace(
             go.Bar(
                 x=name_data['cluster'],
-                y=name_data['distance_to_extremity'],
+                y=name_data['distance_to_boundary'],
                 name=name,
                 marker=dict(color=name_colors[name]),
                 showlegend=False  # Avoid duplicate legend entries
@@ -427,14 +417,14 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
     # Update layout
     fig.update_layout(
         height=600,
-        title_text="Cluster Analysis: Proportions and Strengths",
+        title_text="Cluster Analysis: Proportions and Boundary Distances",
         template="plotly_white",
         showlegend=True
     )
 
     # Update axes
     fig.update_yaxes(title_text="Proportion (%)", range=[0, 100], row=1, col=1)
-    fig.update_yaxes(title_text="Strength", range=[0, 1], row=2, col=1)
+    fig.update_yaxes(title_text="Average Distance to Boundary", row=2, col=1)
     fig.update_xaxes(title_text="Cluster", row=1, col=1)
     fig.update_xaxes(title_text="Cluster", row=2, col=1)
 
