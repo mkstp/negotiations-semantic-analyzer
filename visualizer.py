@@ -347,17 +347,17 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
 
     # Map quadrants to cluster labels and their extremity coordinates
     cluster_extremities = {
-        'Reactive': (0, 0.8),    # Top-Left
-        'Novel/Evasive': (0, 0),     # Bottom-Left
+        'Accommodating': (0, 0.8),    # Top-Left
+        'Discontinuous': (0, 0),     # Bottom-Left
         'Directive': (0.8, 0),   # Bottom-Right
         'Integrative': (0.8, 0.8)  # Top-Right
     }
 
     def classify_quadrant(row):
         if row['coherenceScore'] < x_boundary and row['responseScore'] > y_boundary:
-            return 'Reactive'
+            return 'Accommodating'
         elif row['coherenceScore'] < x_boundary and row['responseScore'] <= y_boundary:
-            return 'Novel/Evasive'
+            return 'Discontinuous'
         elif row['coherenceScore'] >= x_boundary and row['responseScore'] <= y_boundary:
             return 'Directive'
         else:
