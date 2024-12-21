@@ -1,4 +1,4 @@
-def analyzeTranscript(location='demoContent/demo_transcript', topicString = " ", anonymizeFlag=False):
+def analyzeTranscript(location='demo_transcript', topicString = " ", anonymizeFlag=False):
     import fathomPreprocessor
     import parameterizer
 
@@ -12,7 +12,7 @@ def analyzeTranscript(location='demoContent/demo_transcript', topicString = " ",
 
     return data
 
-def outputJson(output, fileName = 'test'):
+def outputJson(output, fileName = 'demo_output'):
     import json
 
     fileName = f"meetingTranscripts/{fileName}.json"
@@ -20,28 +20,8 @@ def outputJson(output, fileName = 'test'):
     with open(fileName, "w") as json_file:
         json.dump(output, json_file, indent=4)
 
-def showReport(fileName = 'test', filter=None):
-    import analyzer
-    import visualizer
-    import pandas as pd
+location = 'negotiation_roleplay/d_marc_2_12-19-2024'
+topicString = 'safety, materials, roof'
 
-    fileName = f"meetingTranscripts/{fileName}.json"
-
-    df = pd.read_json(fileName)
-
-    metrics = analyzer.computeMetrics(df)
-    print(metrics)
-
-    # Create and show plots
-    visualizer.plotWPMAirTime(df, filter)
-    visualizer.plotNarrativeEmotion(df, filter)
-    visualizer.plotCoherenceResponsiveness(df, filter)
-    visualizer.analyze_cluster_proportions_with_distances(df, filter)
-    visualizer.plot_response_and_coherence_frequency(df, filter)
-
-location = 'negotiation_roleplay/d_b_12-10-2024'
-topicString = 'algae, snails, elders, enzymes, economy, culture, Pfizer, alzheimer\'s, mother'
-
-output = analyzeTranscript(location, topicString, True)
+output = analyzeTranscript(location, topicString, False)
 outputJson(output, location)
-showReport(location)
