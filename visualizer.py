@@ -2,6 +2,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plotly.subplots as sp
 import numpy as np
+from sklearn.linear_model import LinearRegression
+import plotly.graph_objects as go
 
 def plotWPMAirTime(df, topic_filter=None):
     """
@@ -73,15 +75,17 @@ def plotWPMAirTime(df, topic_filter=None):
     fig.show()
 
 def plot_cluster_response_and_coherence(df):
-    from sklearn.linear_model import LinearRegression
-
+    
     # Group the data by name
     grouped = df.groupby('name')
 
     # Create a scatter plot
     fig = go.Figure()
 
-    for name, group in grouped:
+    colors_points = ['blue', 'red']  # Colors for the scatter points
+    colors_lines = ['cyan', 'orange']  # Colors for the regression lines
+    
+    for idx, (name, group) in enumerate(grouped):
 
         # Drop NaN values for the regression analysis
         group = group.dropna(subset=['coherenceScore', 'responseScore'])
@@ -91,7 +95,10 @@ def plot_cluster_response_and_coherence(df):
             x=group['coherenceScore'],
             y=group['responseScore'],
             mode='markers',
-            name=f'{name} - Points'
+            name=f'{name} - Points',
+            marker=dict(color=colors_points[idx % len(colors_points)]),  # Cycle through the point colors
+            text=group['id'],  # Display ID on hover
+            hovertemplate="ID: %{text}<br>Coherence Score: %{x}<br>Responsiveness Score: %{y}<extra></extra>"
         ))
 
         # Perform linear regression
@@ -106,7 +113,8 @@ def plot_cluster_response_and_coherence(df):
                 x=group['coherenceScore'],
                 y=y_pred,
                 mode='lines',
-                name=f'{name} - Regression Line'
+                name=f'{name} - Regression Line',
+                line=dict(color=colors_lines[idx % len(colors_lines)])  # Cycle through the line colors
             ))
 
     # Update the layout for better visualization
@@ -119,192 +127,6 @@ def plot_cluster_response_and_coherence(df):
         legend_title="Names",
         template="plotly_white"
     )
-
-    return fig
-
-def plotNarrativeEmotion(df, topic_filter=None):
-
-    # Optionally filter the DataFrame by topic
-    if topic_filter:
-        df = df[df['topic'] == topic_filter]
-
-    # Aggregate data to calculate proportions
-    proportions = df.groupby(['name', 'nType', 'emotion']).size().reset_index(name='count')
-    totals = proportions.groupby(['name', 'nType'])['count'].transform('sum')
-    proportions['proportion'] = proportions['count'] / totals
-
-    # Plot stacked bar chart
-    fig = px.bar(
-        proportions,
-        x='nType',
-        y='proportion',
-        color='emotion',
-        barmode='stack',
-        facet_col='name',
-        title=f"Proportion Emotion by Speaker and Narrative{' for ' + topic_filter if topic_filter else ''}",
-        labels={'proportion': 'Proportion', 'nType': 'Narrative', 'emotion': 'Emotion'},
-        color_discrete_map={"neutral": "blue", "negative": "red", "positive": "green"},
-    )
-
-    # Show plot
-    fig.show()
-
-    return fig
-
-def plot_frequency_response_and_coherence(df):
-    """
-    Creates three frequency histograms and their respective line graphs for average scores:
-    1. Frequency of ResponseIDs grouped by name and Average Response Scores.
-    2. Frequency of CoherenceIDs grouped by name and Average Coherence Scores.
-    3. Frequency of RepeatIDs grouped by name (stacked bars) and Average Repeat Scores grouped by name.
-
-    Histograms and line graphs are displayed in a single figure with subplots.
-
-    Parameters:
-        df (pd.DataFrame): DataFrame containing the data.
-        topic_filter (str, optional): Filter the data by a specific topic.
-    """
-
-    # Determine range for consistent x-axes
-    x_range = df['id'].max()
-
-    # Group by name and responseID for bar chart frequency
-    freq_response_df = df.groupby(["name", "responseID"]).size().reset_index(name="frequency")
-    score_response_df = df.groupby("responseID")["responseScore"].mean().reset_index()
-
-    # Group by name and coherenceID for bar chart frequency
-    freq_coherence_df = df.groupby(["name", "coherenceID"]).size().reset_index(name="frequency")
-    score_coherence_df = df.groupby("coherenceID")["coherenceScore"].mean().reset_index()
-
-    # Group by name and repeatID for bar chart frequency
-    freq_repeat_df = df.groupby(["name", "repeatID"]).size().reset_index(name="frequency")
-    score_repeat_df = df.groupby(["name", "repeatID"])["repeatScore"].mean().reset_index()
-
-    # Generate consistent color mapping for names
-    unique_names = df["name"].unique()
-    color_palette = px.colors.qualitative.Plotly  # Use Plotly's default qualitative palette
-    color_mapping = {name: color_palette[i % len(color_palette)] for i, name in enumerate(unique_names)}
-
-    # Create a subplot figure with 6 rows
-    fig = sp.make_subplots(rows=6, cols=1, shared_xaxes=False, subplot_titles=(
-        "ResponseIDs by Name",
-        "Average Response Scores by ResponseID",
-        "CoherenceIDs by Name",
-        "Average Coherence Scores by CoherenceID",
-        "RepeatIDs by Name (Stacked)",
-        "Average Repeat Scores by RepeatID (Grouped by Name)"
-    ))
-
-    # Keep track of which names have already been added to the legend
-    names_in_legend = set()
-
-    # 1. Add ResponseID bar chart
-    for name in freq_response_df["name"].unique():
-        filtered_data = freq_response_df[freq_response_df["name"] == name]
-        show_legend = name not in names_in_legend
-        fig.add_trace(
-            go.Bar(
-                x=filtered_data["responseID"],
-                y=filtered_data["frequency"],
-                name=name,
-                marker=dict(color=color_mapping[name]),
-                showlegend=show_legend
-            ),
-            row=1,
-            col=1
-        )
-        names_in_legend.add(name)
-
-    # 2. Add Response Score Average Line Graph
-    fig.add_trace(
-        go.Scatter(
-            x=score_response_df["responseID"],
-            y=score_response_df["responseScore"],
-            mode='lines',
-            name="Average Response Score",
-            line=dict(color="black", width=1)
-        ),
-        row=2,
-        col=1
-    )
-
-    # 3. Add CoherenceID bar chart
-    for name in freq_coherence_df["name"].unique():
-        filtered_data = freq_coherence_df[freq_coherence_df["name"] == name]
-        show_legend = name not in names_in_legend
-        fig.add_trace(
-            go.Bar(
-                x=filtered_data["coherenceID"],
-                y=filtered_data["frequency"],
-                name=name,
-                marker=dict(color=color_mapping[name]),
-                showlegend=show_legend
-            ),
-            row=3,
-            col=1
-        )
-        names_in_legend.add(name)
-
-    # 4. Add Coherence Score Average Line Graph
-    fig.add_trace(
-        go.Scatter(
-            x=score_coherence_df["coherenceID"],
-            y=score_coherence_df["coherenceScore"],
-            mode='lines',
-            name="Average Coherence Score",
-            line=dict(color="black", width=1)
-        ),
-        row=4,
-        col=1
-    )
-
-    # 5. Add RepeatID bar chart (stacked)
-    for name in freq_repeat_df["name"].unique():
-        filtered_data = freq_repeat_df[freq_repeat_df["name"] == name]
-        show_legend = name not in names_in_legend
-        fig.add_trace(
-            go.Bar(
-                x=filtered_data["repeatID"],
-                y=filtered_data["frequency"],
-                name=name,
-                marker=dict(color=color_mapping[name]),
-                showlegend=show_legend
-            ),
-            row=5,
-            col=1
-        )
-        names_in_legend.add(name)
-
-    # 6. Add Repeat Score Average Line Graph (grouped by name)
-    for name in score_repeat_df["name"].unique():
-        filtered_data = score_repeat_df[score_repeat_df["name"] == name]
-        show_legend = name not in names_in_legend
-        fig.add_trace(
-            go.Scatter(
-                x=filtered_data["repeatID"],
-                y=filtered_data["repeatScore"],
-                mode='lines',
-                name=f"{name} - Average Repeat Score",
-                line=dict(width=1),
-                marker=dict(color=color_mapping[name]),
-                showlegend=show_legend
-            ),
-            row=6,
-            col=1
-        )
-
-    # Update layout for better visualization
-    fig.update_layout(
-        height=1500,  # Increase height to accommodate all graphs
-        width=800,    # Adjust width for better visualization
-        barmode='stack',  # Stack bars for RepeatID plot
-        template="plotly_white",
-        legend_title="Names"
-    )
-
-    # Update x-axes for each subplot
-    for i in range(1, 7):  # Update all 6 subplots
-        fig.update_xaxes(tickmode="linear", range=[0, x_range], dtick=5, row=i, col=1)
 
     return fig
 
@@ -412,5 +234,193 @@ def plot_proportions_response_and_coherence(df):
     fig.update_yaxes(title_text="Average Distance to Boundary", row=2, col=1)
     fig.update_xaxes(title_text="Cluster", row=1, col=1)
     fig.update_xaxes(title_text="Cluster", row=2, col=1)
+
+    return fig
+
+def plotNarrativeEmotion(df, topic_filter=None):
+
+    # Optionally filter the DataFrame by topic
+    if topic_filter:
+        df = df[df['topic'] == topic_filter]
+
+    # Aggregate data to calculate proportions
+    proportions = df.groupby(['name', 'nType', 'emotion']).size().reset_index(name='count')
+    totals = proportions.groupby(['name', 'nType'])['count'].transform('sum')
+    proportions['proportion'] = proportions['count'] / totals
+
+    # Plot stacked bar chart
+    fig = px.bar(
+        proportions,
+        x='nType',
+        y='proportion',
+        color='emotion',
+        barmode='stack',
+        facet_col='name',
+        title=f"Proportion Emotion by Speaker and Narrative{' for ' + topic_filter if topic_filter else ''}",
+        labels={'proportion': 'Proportion', 'nType': 'Narrative', 'emotion': 'Emotion'},
+        color_discrete_map={"neutral": "blue", "negative": "red", "positive": "green"},
+    )
+
+    # Show plot
+    fig.show()
+
+    return fig
+
+def plot_frequency_response_and_coherence(df):
+    """
+    Creates three frequency histograms and their respective line graphs for average scores:
+    1. Frequency of ResponseIDs grouped by name and Average Response Scores.
+    2. Frequency of CoherenceIDs grouped by name and Average Coherence Scores.
+    3. Frequency of RepeatIDs grouped by name (stacked bars) and Average Repeat Scores grouped by name.
+
+    Histograms and line graphs are displayed in a single figure with subplots.
+
+    Parameters:
+        df (pd.DataFrame): DataFrame containing the data.
+    """
+
+    # Determine range for consistent x-axes
+    x_range = [0, df['id'].max()]
+
+    # Group by name and responseID for bar chart frequency
+    freq_response_df = df.groupby(["name", "responseID"]).size().reset_index(name="frequency")
+    score_response_df = df.groupby("responseID")["responseScore"].mean().reset_index()
+
+    # Group by name and coherenceID for bar chart frequency
+    freq_coherence_df = df.groupby(["name", "coherenceID"]).size().reset_index(name="frequency")
+    score_coherence_df = df.groupby("coherenceID")["coherenceScore"].mean().reset_index()
+
+    # Group by name and repeatID for bar chart frequency
+    freq_repeat_df = df.groupby(["name", "repeatID"]).size().reset_index(name="frequency")
+    score_repeat_df = df.groupby(["name", "repeatID"])["repeatScore"].mean().reset_index()
+
+    # Generate consistent color mapping for names
+    unique_names = df["name"].unique()
+    color_palette = px.colors.qualitative.Plotly  # Use Plotly's default qualitative palette
+    color_mapping = {name: color_palette[i % len(color_palette)] for i, name in enumerate(unique_names)}
+
+    # Create a subplot figure with 3 rows and 2 columns
+    fig = sp.make_subplots(
+        rows=3, cols=2, shared_xaxes=True, 
+        subplot_titles=(
+            "ResponseIDs by Name",
+            "Average Response Scores by ResponseID",
+            "CoherenceIDs by Name",
+            "Average Coherence Scores by CoherenceID",
+            "RepeatIDs by Name (Stacked)",
+            "Average Repeat Scores by RepeatID (Grouped by Name)"
+        ),
+        vertical_spacing=0.15  # Reduce vertical spacing between rows
+    )
+
+    # Keep track of which names have already been added to the legend
+    names_in_legend = set()
+
+    # 1. Add ResponseID bar chart (left column)
+    for name in freq_response_df["name"].unique():
+        filtered_data = freq_response_df[freq_response_df["name"] == name]
+        show_legend = name not in names_in_legend
+        fig.add_trace(
+            go.Bar(
+                x=filtered_data["responseID"],
+                y=filtered_data["frequency"],
+                name=name,
+                marker=dict(color=color_mapping[name]),
+                showlegend=show_legend
+            ),
+            row=1,
+            col=1
+        )
+        names_in_legend.add(name)
+
+    # 2. Add Response Score Average Line Graph (right column)
+    fig.add_trace(
+        go.Scatter(
+            x=score_response_df["responseID"],
+            y=score_response_df["responseScore"],
+            mode='lines',
+            name="Average Response Score",
+            line=dict(color="black", width=1)
+        ),
+        row=1,
+        col=2
+    )
+
+    # 3. Add CoherenceID bar chart (left column)
+    for name in freq_coherence_df["name"].unique():
+        filtered_data = freq_coherence_df[freq_coherence_df["name"] == name]
+        show_legend = name not in names_in_legend
+        fig.add_trace(
+            go.Bar(
+                x=filtered_data["coherenceID"],
+                y=filtered_data["frequency"],
+                name=name,
+                marker=dict(color=color_mapping[name]),
+                showlegend=show_legend
+            ),
+            row=2,
+            col=1
+        )
+        names_in_legend.add(name)
+
+    # 4. Add Coherence Score Average Line Graph (right column)
+    fig.add_trace(
+        go.Scatter(
+            x=score_coherence_df["coherenceID"],
+            y=score_coherence_df["coherenceScore"],
+            mode='lines',
+            name="Average Coherence Score",
+            line=dict(color="black", width=1)
+        ),
+        row=2,
+        col=2
+    )
+
+    # 5. Add RepeatID bar chart (stacked, left column)
+    for name in freq_repeat_df["name"].unique():
+        filtered_data = freq_repeat_df[freq_repeat_df["name"] == name]
+        show_legend = name not in names_in_legend
+        fig.add_trace(
+            go.Bar(
+                x=filtered_data["repeatID"],
+                y=filtered_data["frequency"],
+                name=name,
+                marker=dict(color=color_mapping[name]),
+                showlegend=show_legend
+            ),
+            row=3,
+            col=1
+        )
+        names_in_legend.add(name)
+
+    # 6. Add Repeat Score Average Line Graph (grouped by name, right column)
+    for name in score_repeat_df["name"].unique():
+        filtered_data = score_repeat_df[score_repeat_df["name"] == name]
+        show_legend = name not in names_in_legend
+        fig.add_trace(
+            go.Scatter(
+                x=filtered_data["repeatID"],
+                y=filtered_data["repeatScore"],
+                mode='lines',
+                name=f"{name} - Average Repeat Score",
+                line=dict(width=1),
+                marker=dict(color=color_mapping[name]),
+                showlegend=show_legend
+            ),
+            row=3,
+            col=2
+        )
+
+    # Update layout for better visualization
+    fig.update_layout(
+        height=900,  # Shorter overall height for the figure
+        width=1200,  # Adjust width for better visualization
+        barmode='stack',  # Stack bars for RepeatID plot
+        template="plotly_white",
+        legend_title="Names"
+    )
+
+    # Update x-axes for all subplots
+    fig.update_xaxes(tickmode="linear", range=x_range, dtick=5, showticklabels=True)
 
     return fig
