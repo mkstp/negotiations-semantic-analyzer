@@ -1,6 +1,6 @@
 #this model takes in json data from a parameterized transcript and does analysis on the parameters
 from collections import defaultdict
-import torch
+import torch 
 
 #DEPRECATED
 

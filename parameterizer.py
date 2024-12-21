@@ -1,6 +1,6 @@
 #this module contains the functions for detecting the parameters for analysis in a given transcript
 import re
-import spacy
+import spacy 
 from transformers import pipeline
 from scipy.signal import find_peaks
 sentimentPipeline = pipeline("sentiment-analysis", model='cardiffnlp/twitter-roberta-base-sentiment-latest')
