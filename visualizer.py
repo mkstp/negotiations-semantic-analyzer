@@ -72,12 +72,8 @@ def plotWPMAirTime(df, topic_filter=None):
 
     fig.show()
 
-def plotCoherenceResponsiveness(df, topic_filter=None):
+def plot_cluster_response_and_coherence(df):
     from sklearn.linear_model import LinearRegression
-
-    # Optionally filter the DataFrame by topic
-    if topic_filter:
-        df = df[df['topic'] == topic_filter]
 
     # Group the data by name
     grouped = df.groupby('name')
@@ -117,14 +113,12 @@ def plotCoherenceResponsiveness(df, topic_filter=None):
     fig.update_layout(
         height=500,  # Adjust height to accommodate both graphs
         width=800,  # Adjust width for better visualization
-        title=f"Scatter Plot with Linear Regression Lines{' for ' + topic_filter if topic_filter else ''}",
+        title=f"Scatter Plot with Linear Regression Lines",
         xaxis_title="Coherence Score",
         yaxis_title="Responsiveness Score",
         legend_title="Names",
         template="plotly_white"
     )
-
-    fig.show()
 
     return fig
 
@@ -157,7 +151,7 @@ def plotNarrativeEmotion(df, topic_filter=None):
 
     return fig
 
-def plot_response_and_coherence_frequency(df, topic_filter=None):
+def plot_frequency_response_and_coherence(df):
     """
     Creates three frequency histograms and their respective line graphs for average scores:
     1. Frequency of ResponseIDs grouped by name and Average Response Scores.
@@ -170,10 +164,6 @@ def plot_response_and_coherence_frequency(df, topic_filter=None):
         df (pd.DataFrame): DataFrame containing the data.
         topic_filter (str, optional): Filter the data by a specific topic.
     """
-
-    # Optionally filter the DataFrame by topic
-    if topic_filter:
-        df = df[df['topic'] == topic_filter]
 
     # Determine range for consistent x-axes
     x_range = df['id'].max()
@@ -316,10 +306,9 @@ def plot_response_and_coherence_frequency(df, topic_filter=None):
     for i in range(1, 7):  # Update all 6 subplots
         fig.update_xaxes(tickmode="linear", range=[0, x_range], dtick=5, row=i, col=1)
 
-    # Show the figure
-    fig.show()
+    return fig
 
-def analyze_cluster_proportions_with_distances(df, topic_filter=None):
+def plot_proportions_response_and_coherence(df):
     """
     Groups the dataframe by 'name' and classifies 'coherenceScore'-'responseScore' pairs
     into four clusters (Accommodating, Discontinuous, Directive, Integrative). 
@@ -330,10 +319,6 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
     Parameters:
         df (pd.DataFrame): DataFrame containing 'name', 'coherenceScore', and 'responseScore'.
     """
-
-    # Optionally filter the DataFrame by topic
-    if topic_filter:
-        df = df[df['topic'] == topic_filter]
 
     # Ensure the required columns exist
     if not {'name', 'coherenceScore', 'responseScore'}.issubset(df.columns):
@@ -428,5 +413,4 @@ def analyze_cluster_proportions_with_distances(df, topic_filter=None):
     fig.update_xaxes(title_text="Cluster", row=1, col=1)
     fig.update_xaxes(title_text="Cluster", row=2, col=1)
 
-    # Show the figure
-    fig.show()
+    return fig
