@@ -20,8 +20,8 @@ def outputJson(output, fileName = 'demo_output'):
     with open(fileName, "w") as json_file:
         json.dump(output, json_file, indent=4)
 
-location = 'negotiation_roleplay/d_marc_2_12-19-2024'
-topicString = 'safety, materials, roof'
+location = 'brady/b_marc_11-28-2024'
+topicString = 'sea life, climate, Japanese culture, relationships'
 
 output = analyzeTranscript(location, topicString, False)
 outputJson(output, location)
