@@ -83,7 +83,7 @@ The following overview examines the proportion of statements within each quadran
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/cluster_analysis.png?raw=true)
 
-## Accommodating = High Responsive / Low Coherence: Upper Left Quadrant Analysis
+## Accommodating = High Responsive & Low Coherence: Upper Left Quadrant Analysis
 If we divide the graph into quadrants, the upper left portion of the graph represents statements that are very responsive to what the last negotiator has said, but have little to do with what the current negotiator is trying to say. Example:
 
 ```
@@ -107,7 +107,7 @@ If we divide the graph into quadrants, the upper left portion of the graph repre
 
 In this example, D C has started to address cost during turn 3, and then on the next turn, B K has asked an open-ended probing question which directly addresses this. But this question had little similarity with B K's previous statements on Alzheimer’s.
 
-## Discontinuous = Low Responsive / Low Coherence: Lower Left Quadrant Analysis
+## Discontinuous = Low Responsive & Low Coherence: Lower Left Quadrant Analysis
 
 The lower left is for novel information which does not resemble anything spoken within the last few turns. This is where we would find a topic changer:
 
@@ -120,7 +120,7 @@ The lower left is for novel information which does not resemble anything spoken 
 "coherenceScore": 0.15,
 ```
 
-Another kind of statement you can find in this quadrant is the passive acknowledgement. This form of statement is only referential and not substantiated.
+Another kind of statement you can find in this quadrant is the implicit acknowledgement. This form of statement is only referential and not substantiated.
 
 ```
 "turn": 2,
@@ -133,7 +133,7 @@ Another kind of statement you can find in this quadrant is the passive acknowled
 
 The claim that B K understands lacks substantiation through semantic similarity. A negotiator who passively agrees, changes the topic, or asks unrelated questions discontinues the semantic line of conversation. Statements in this quadrant indicate a decision not to expand on their own or their partner's points. While such statements are valid and necessary in conversations, their overuse represents evasive tactics, and their effectiveness lies in balancing them with other types of statements.
 
-## Directive = Low Responsive / High Coherence: Lower Right Quadrant Analysis
+## Directive = Low Responsive & High Coherence: Lower Right Quadrant Analysis
 
 This quadrant is for statements which are highly self-similar (in some cases exact repeats) but not responsive to the other person. These kinds of statements repeat or expand on something a negotiator is currently talking about.
 
@@ -164,7 +164,7 @@ A negotiator who spends a lot of time in this quadrant will have a more independ
 
 “I feel it went well in that I didn't move from the position of environment first and made that clear.  There was a clear responsibility to ensure that the ecosystem being upset means that the village loses out.”
 
-## Integrative = High Responsive / High Coherence: Upper Right Quadrant Analysis
+## Integrative = High Responsive & High Coherence: Upper Right Quadrant Analysis
 
 These kinds of statements are highly-self similar, even repetitive, and also highly responsive to what the other negotiator is saying. They are integrative in the sense that they tend to discuss the similarities the two negotiators have in common. 
 
@@ -188,6 +188,70 @@ These kinds of statements are highly-self similar, even repetitive, and also hig
 ```
 In this negotiation, both agreed that protecting the environment was important. 
 
+## Distributed Differences in Responsiveness and Coherence Across Time
+
+The following graph shows the distribution of the sum of scores for each statement colored by name. The negative values are the coherence levels by statement and the positive values are the levels of responses to those statements. The distribution differences reveal areas of alignment or divergence in what each negotiator prioritized within that turn.
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/coh-res-rep.png?raw=true)
+
+Coherence and responsiveness are imperfect mirrors of each other. For instance, in the ID range 10–25, the blue coherence bars reflect Y C's self-referential statements, while the red response bars show L S's selective responses. During this range, Y C's turn was highly coherent, with many statements interrelated and elaborative. In contrast, L S's responses highlight the selective importance placed on Y C's points. 
+
+Statement ID 14 has a high coherence level for Y C:
+
+```
+"id": 14,
+"turn": 6,
+"name": "Y C",
+"previous": "L S",
+"text": " And I believe that if we have that resource, it's going to be a breakthrough improvement for the human history.",
+```
+
+But L S was completely unresponsive to that point. Y C then introduces some novel information by changing the subject:
+
+```
+"id": 19,
+"turn": 6,
+"name": "Y C",
+"previous": "L S",
+"text": " So, but the thing is that we will, we are currently competing with another company.",
+
+...
+
+"id": 22,
+"turn": 6,
+"name": "Y C",
+"previous": "L S",
+"text": " So if there's only one choice that you can make between us and the other company, I believe that will be a much better choice.",
+
+"id": 23,
+"turn": 6,
+"name": "Y C",
+"previous": "L S",
+"text": " But I would also be curious about your concerns and your questions that you have, and then we'll try our best to answer them and make sure that we have the mutual understanding of the goal and then protect the environment as well.",
+```
+
+L S strongest responses are to ID 22 and 23 in Y C's turn:
+
+```
+"id": 25,
+"turn": 7,
+"name": "Leigh Sembaluk",
+"previous": "Yichun Cheng",
+"text": " One is we can make our decision on the other company and and see what goes, for us, the reason we have this algae is because we take care of the environment with it, it, you know, don't know if it existed elsewhere if it wasn't there, but you know, the fact that it exists where we are is because it's a very delicate balance, balance and we've taken care of it.",
+"responseID": 22,
+"responseScore": 0.51,
+
+...
+
+"id": 28,
+"turn": 7,
+"name": "L S",
+"previous": "Y C",
+"text": " The first thing that is non-negotiable for us is the algae if it's removed or moved off of our land, it will die and that our whole ecosystem suffers.",
+"responseID": 23,
+"responseScore": 0.41,
+```
+
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter_alt.png?raw=true)
 
@@ -203,7 +267,7 @@ Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 s
 
 I'm going to try and detect stylistic and disfluency patterns and compare them across negotiators, with the idea that if negotiators can mimic each other's speaking style they will increase their changes of a collaborative outcome. This is a cutting edge research area and there is at this time not a clear path for parametirizing speaking style where suggestions for transforming one negotiators speaking style to another's can be reliably made. 
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/coh-res-rep.png?raw=true)
+
 
 
 
