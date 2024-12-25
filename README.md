@@ -250,7 +250,20 @@ L S strongest responses are to ID 22 and 23 in Y C's turn:
 "text": " The first thing that is non-negotiable for us is the algae if it's removed or moved off of our land, it will die and that our whole ecosystem suffers.",
 "responseID": 23,
 "responseScore": 0.41,
+
+...
+
+"id": 32,
+"turn": 7,
+"name": "L S",
+"previous": "Y C",
+"text": " So those are the couple main things and main concerns for us.",
+"responseID": 23,
+"responseScore": 0.43,
+
 ```
+
+ID range(35-48) is a poignant example of undercoverage. We see a dip and sparsely populated section where Y C's turn statements become less coherent, and where L S is largely unresponsive
 
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter_alt.png?raw=true)
