@@ -196,7 +196,9 @@ The following graph shows the distribution of the sum of scores for each stateme
 
 Coherence and responsiveness are imperfect mirrors of each other. For instance, in the ID range 10–25, the blue coherence bars reflect Y C's self-referential statements, while the red response bars show L S's selective responses. During this range, Y C's turn was highly coherent, with many statements interrelated and elaborative. In contrast, L S's responses highlight the selective importance placed on Y C's points. 
 
-Statement ID 14 has a high coherence level for Y C:
+ID range(35-48) is a poignant example of undercoverage. We see a dip and sparsely populated section where Y C's turn statements become less coherent, and where L S is largely unresponsive.
+
+By contrast, statement ID 14 has the highest coherence level for Y C:
 
 ```
 "id": 14,
@@ -263,7 +265,7 @@ L S strongest responses are to ID 22 and 23 in Y C's turn:
 
 ```
 
-ID range(35-48) is a poignant example of undercoverage. We see a dip and sparsely populated section where Y C's turn statements become less coherent, and where L S is largely unresponsive
+
 
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter_alt.png?raw=true)
