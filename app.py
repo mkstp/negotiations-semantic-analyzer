@@ -48,6 +48,8 @@ app.layout = html.Div([
 
     dcc.Graph(id='frequencies', style={'marginTop': '20px'}),
 
+    dcc.Graph(id='repetitions', style={'marginTop': '20px'}),
+
     html.Div([
         html.H3("Data Table:"),
         dash_table.DataTable(
@@ -75,6 +77,7 @@ app.layout = html.Div([
         Output('cluster', 'figure'),
         Output('proportions', 'figure'),
         Output('frequencies', 'figure'),
+        Output('repetitions', 'figure'),
         Output("data-table", "columns"),
         Output("data-table", "data")
     ],
@@ -84,10 +87,11 @@ app.layout = html.Div([
     ],
     [State('upload-data', 'filename')]
 )
+
 def update_graph(contents, selected_topic, n_clicks):
     if not contents:
         empty_fig = go.Figure({"layout": {"title": "No Data Available"}})
-        return [], empty_fig, empty_fig, empty_fig, [], []  # Match the number of return values
+        return [], empty_fig, empty_fig, empty_fig, empty_fig, [], []  # Match the number of return values
 
     # Parse uploaded file
     content_type, content_string = contents.split(',')
@@ -101,7 +105,7 @@ def update_graph(contents, selected_topic, n_clicks):
                 "annotations": [{"text": str(e), "showarrow": False}]
             }
         })
-        return [], error_fig, error_fig, error_fig, [], []  # Match the number of return values
+        return [], error_fig, error_fig, error_fig, error_fig, [], []  # Match the number of return values
 
     # Prepare topic filter options
     topic_options = [{'label': topic, 'value': topic} for topic in df['topic'].unique()]
@@ -109,11 +113,17 @@ def update_graph(contents, selected_topic, n_clicks):
     # Apply topic filter if a topic is selected
     filtered_df = df[df['topic'] == selected_topic] if selected_topic else df
 
-    # Generate the figures using visualizer
+    # Create a legend dictionary with unique 'name' values mapped to colors
+    unique_names = filtered_df['name'].unique()
+    colors = ['blue', 'red']
+    legend = {name: colors[i % len(colors)] for i, name in enumerate(unique_names)}
+
+    # Generate the figures using visualizer with the legend passed
     try:
-        fig1 = visualizer.plot_cluster_response_and_coherence(filtered_df)
-        fig2 = visualizer.plot_proportions_response_and_coherence(filtered_df)
-        fig3 = visualizer.plot_frequency_response_and_coherence(filtered_df)
+        fig1 = visualizer.plot_cluster_response_and_coherence(filtered_df, legend)
+        fig2 = visualizer.plot_proportions_response_and_coherence(filtered_df, legend)
+        fig3 = visualizer.plot_frequency_response_and_coherence(filtered_df, legend)
+        fig4 = visualizer.plot_repetition(filtered_df, legend)
     except Exception as e:
         error_fig = go.Figure({
             "layout": {
@@ -121,7 +131,7 @@ def update_graph(contents, selected_topic, n_clicks):
                 "annotations": [{"text": str(e), "showarrow": False}]
             }
         })
-        return topic_options, error_fig, error_fig, error_fig, [], []  # Match the number of return values
+        return topic_options, error_fig, error_fig, error_fig, error_fig, [], []  # Match the number of return values
 
     # Prepare table data
     required_columns = ['id', 'name', 'text', 'qType', 'nType', 'topic', 'emotion']
@@ -129,7 +139,7 @@ def update_graph(contents, selected_topic, n_clicks):
     table_columns = [{"name": col, "id": col} for col in filtered_df.columns]
     table_data = filtered_df.to_dict("records")
 
-    return topic_options, fig1, fig2, fig3, table_columns, table_data
+    return topic_options, fig1, fig2, fig3, fig4, table_columns, table_data
 
 if __name__ == '__main__':
     app.run_server(debug=True)
