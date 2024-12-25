@@ -265,22 +265,39 @@ L S strongest responses are to ID 22 and 23 in Y C's turn:
 
 ```
 
+## Analysis of Accumulated Repetition 
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/repeat_scores.png?raw=true)
+
+This chart represents out of turn repetitions of statements from earlier points in the conversation. A repetition is defined as the highest scoring similarity statement that is not in the present or previous turn. Strong repetitions indicate highly similar word choice and semantic alignment. An example:
+
+```
+"id": 10,
+"turn": 6,
+"name": "Y C",
+"previous": "L S",
+"text": "Yeah, I totally understand your concern, and then I respect how you really care for the environment.",
+
+...
+
+"id": 34,
+"turn": 8,
+"name": "Y C",
+"previous": "L S",
+"text": "I completely understand you, concern, you really care about the environment.",
+"repID": 10,
+"repScore": 0.91,
+```
+
+Repetition in negotiations often signals paraphrasing or summarizing, which acknowledges the other party's perspective. However, self-repetition can indicate a looping thought pattern or a sense of not being heard. Unaddressed important statements are more likely to be repeated, doubling the time spent conveying the same meaning. This additional time investment can emphasize a statement’s importance and invite coherence or responsiveness to clarify its meaning.
+
+In the ID range 35–48, Y C's less self-referential statements, coupled with L S's lack of responsiveness, fostered an environment where repetition occurred, which can be interpreted as reducing the negotiation's overall efficiency.
+
+### Conversational Modes
+
+Conversational modes are points of focus within a discussion, appearing as peaks in a distribution. A highly left-skewed distribution with one mode early on suggests the conversation repeatedly circled initial points. In contrast, multiple modes indicate a discussion covering diverse topics rather than revisiting the same ones.
 
 
-
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter_alt.png?raw=true)
-
-
-Repetitiveness tracks the sentenceID's of any previous statement that is a 0.6 semantic similarity match to what is crrently being said. A skilled negotiator will be able to paraphrase and synthesize multiple aspects of what someone has said over time. This will be showon on the repetitiveness index as hits on sentence which are spoken by the other person distributed in strategic locations throughout the conversation. Alternatively, speakers which show a high hit rate of repetitions on their own sentences are repeating the same points, this could be because they have a underlying unresolved narrative loop in their minds which underpins the need to repeat themselves. 
-
-
-
-
-## Lexical similarity:
-
-- word choice patterns
-
-I'm going to try and detect stylistic and disfluency patterns and compare them across negotiators, with the idea that if negotiators can mimic each other's speaking style they will increase their changes of a collaborative outcome. This is a cutting edge research area and there is at this time not a clear path for parametirizing speaking style where suggestions for transforming one negotiators speaking style to another's can be reliably made. 
 
 
 
