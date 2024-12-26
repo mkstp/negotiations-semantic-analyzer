@@ -1,58 +1,5 @@
-#this model takes in json data from a parameterized transcript and does analysis on the parameters
-from collections import defaultdict
-import torch 
-
-#DEPRECATED
-
-#deals with tensor filtering
-def maskFilter(tensor, matchThreshold=0.45):
-    #inputs a tensor and filters according to a threshold, then returns a list of indices
-    #where the filter was achieved
-    simScores = tensor 
-    mask = (simScores > matchThreshold) & (simScores < 0.9)
-    filtered = torch.nonzero(mask, as_tuple=True)[0]
-
-    return filtered.tolist()
-
-#proportional distributions across speaker parameters
-def compareSpeakers(parameterOutput, parameter):
-    #Compute the proportion of air time for each speaker.
-    counts = defaultdict(int)
-    total = 0
-
-    for entry in parameterOutput:
-        speaker = entry['name']
-        value = entry[parameter]
-        counts[speaker] += value
-        total += value
-
-    # Compute proportions
-    return {speaker: {f"{parameter}Proportion": (value / total if total > 0 else 0.0)}
-            for speaker, value in counts.items()}
-
-#proportional comparisons within individual speaker parameters
-def tallySpeakerParam(parameterOutput, parameter, categories):
-    # Initialize dictionaries to count 
-    counts = defaultdict(lambda: {category: 0 for category in categories + ['total']})
-
-    for entry in parameterOutput:
-        speaker = entry['name']
-        value = entry[parameter]
-
-        if value in categories:
-            counts[speaker][value] += 1
-            counts[speaker]['total'] += 1
-
-    # Compute proportions
-    proportions = {}
-    for speaker, data in counts.items():
-        total = data['total']
-        proportions[speaker] = {f"{category}Proportion": (data[category] / total if total > 0 else 0.0) for category in categories}
-
-    return proportions
-
-
-# MAIN FUNCTIONS
+import json
+import pandas as pd
 
 # calculates the proportion of responses of each person to the other person's statements
 def responseCoverage(df):
@@ -108,3 +55,17 @@ def computeMetrics(df):
     
     return result
 
+def analyzeTranscript(content, fileName):
+    import fathomPreprocessor
+    import parameterizer
+
+    raw = fathomPreprocessor.prepFile(content, False)
+    data = parameterizer.parameterize(raw[0], raw[1], raw[2]) # raw[0], raw[1], raw[2] = speakers, timespans, transcripts
+
+    #save the new json file in the same location
+    fileName = fileName[:-3] + "json"
+
+    with open(fileName, "w") as json_file:
+        json.dump(data, json_file, indent=4)
+
+    return pd.read_json(fileName)
