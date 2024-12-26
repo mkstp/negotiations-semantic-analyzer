@@ -4,6 +4,7 @@ from dash import Dash, dcc, html, dash_table, Input, Output, State
 import plotly.graph_objects as go
 import pandas as pd
 import visualizer
+import analyzer
 
 # Initialize the Dash app
 app = Dash(__name__)
@@ -45,9 +46,7 @@ app.layout = html.Div([
         dcc.Graph(id='proportions', style={'flex': '1', 'margin': '10px'}),
     ], style={'display': 'flex', 'justifyContent': 'space-around', 'alignItems': 'center'}),
 
-
     dcc.Graph(id='frequencies', style={'marginTop': '20px'}),
-
     dcc.Graph(id='repetitions', style={'marginTop': '20px'}),
 
     html.Div([
@@ -83,21 +82,29 @@ app.layout = html.Div([
     ],
     [
         Input('upload-data', 'contents'),
-        Input("topic-filter", "value"),
+        Input("topic-filter", "value")
     ],
     [State('upload-data', 'filename')]
 )
-
-def update_graph(contents, selected_topic, n_clicks):
+def update_graph(contents, selected_topic, filename):
     if not contents:
         empty_fig = go.Figure({"layout": {"title": "No Data Available"}})
-        return [], empty_fig, empty_fig, empty_fig, empty_fig, [], []  # Match the number of return values
+        return [], empty_fig, empty_fig, empty_fig, empty_fig, [], []
 
     # Parse uploaded file
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
+
     try:
-        df = pd.read_json(io.StringIO(decoded.decode('utf-8')))
+        global df
+        if filename.endswith('.txt'):
+            # Analyze .txt file
+            df = analyzer.analyzeTranscript(decoded.decode('utf-8'), filename)
+        elif filename.endswith('.json'):
+            # Read JSON file
+            df = pd.read_json(io.StringIO(decoded.decode('utf-8')))
+        else:
+            raise ValueError("Unsupported file format. Please upload a Fathom transcript .txt or a preprocessed .json file.")
     except Exception as e:
         error_fig = go.Figure({
             "layout": {
@@ -105,7 +112,7 @@ def update_graph(contents, selected_topic, n_clicks):
                 "annotations": [{"text": str(e), "showarrow": False}]
             }
         })
-        return [], error_fig, error_fig, error_fig, error_fig, [], []  # Match the number of return values
+        return [], error_fig, error_fig, error_fig, error_fig, [], []
 
     # Prepare topic filter options
     topic_options = [{'label': topic, 'value': topic} for topic in df['topic'].unique()]
@@ -131,7 +138,7 @@ def update_graph(contents, selected_topic, n_clicks):
                 "annotations": [{"text": str(e), "showarrow": False}]
             }
         })
-        return topic_options, error_fig, error_fig, error_fig, error_fig, [], []  # Match the number of return values
+        return topic_options, error_fig, error_fig, error_fig, error_fig, [], []
 
     # Prepare table data
     required_columns = ['id', 'name', 'text', 'qType', 'nType', 'topic', 'emotion']

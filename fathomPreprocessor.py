@@ -49,10 +49,10 @@ def cleanText(transcriptionList):
     return transcriptionList
 
 #main function
-def prepFile(dir, anonymizeFlag=True):
+def prepFile(content, anonymizeFlag=True):
     # FILE PREP: retreive raw transcript and split into lists and clean up values 
-    file = open(dir)
-    content = file.read()
+    # file = open(dir)
+    # content = file.read()
 
     #extract and convert the total time of the convo from minutes to seconds
     totalConvoTime = re.search(r'(?:VIEW RECORDING)\s-\s\d{1,}', content)

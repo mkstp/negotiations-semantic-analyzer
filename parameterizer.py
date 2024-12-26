@@ -155,9 +155,8 @@ def responsivenessCoherenceDetector(output, similarityTensors):
 
     return output
 
-
 #main function
-def parameterize(speakerList, timeList, transcriptList, topicList):
+def parameterize(speakerList, timeList, transcriptList):
     #speakerList: strings: names of each speaker
     #timeList: integers: timespan in seconds 
     #transcriptList: strings: what was said
@@ -165,12 +164,6 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
     output = []
 
     speechRates = speechRateDetector(timeList, transcriptList)
-
-    #match topics to transcript list items
-    topics = matchTopic(transcriptList, topicList) if topicList else [("N/A", 0) for i in transcriptList]
-
-    #correlate filler word use
-
 
     sentenceList = []
     count = 0
@@ -198,8 +191,8 @@ def parameterize(speakerList, timeList, transcriptList, topicList):
                 'wpm': speechRates[idx1],
                 'qType': questionDetector(sentence),
                 'nType': narrativeDetector(sentence),
-                'topic': topics[idx1][0],
-                'topicConfidence': topics[idx1][1],
+                'topic': "test",
+                'topicConfidence': 1.0,
                 'emotion': emotion[0],
                 'emotionConfidence': emotion[1]
             }
