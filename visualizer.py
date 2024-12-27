@@ -148,6 +148,8 @@ def plot_cluster_response_and_coherence(df, legend):
         title="Scatter Plot with Linear Regression Lines",
         xaxis_title="Coherence Score",
         yaxis_title="Responsiveness Score",
+        xaxis=dict(range=[0, 1]),
+        yaxis=dict(range=[0, 1]),
         template="plotly_white",
         legend_title="Names"
     )
@@ -353,6 +355,7 @@ def plot_repetition(df, legend):
     fig.update_layout(
         height=400,
         width=1200,
+        xaxis=dict(range=[0, df['id'].max()]),
         barmode='stack',
         template="plotly_white",
         legend_title="Names",

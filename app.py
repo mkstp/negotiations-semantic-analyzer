@@ -34,12 +34,26 @@ app.layout = html.Div([
         )
     ], style={'textAlign': 'center', 'marginBottom': '20px'}),
 
-    dcc.Dropdown(
-        id='topic-filter',
-        options=[],
-        placeholder='Select a topic',
-        style={'width': '50%', 'textAlign': 'center', 'margin': '10px auto'}
-    ),
+    html.Div([
+        dcc.Dropdown(
+            id='topic-filter',
+            options=[],
+            placeholder='Filter topic',
+            style={'width': '50%', 'margin': '10px'}
+        ),
+        dcc.Dropdown(
+            id='emotion-filter',
+            options=[],
+            placeholder='Filter emotion',
+            style={'width': '50%', 'margin': '10px'}
+        ),
+        dcc.Dropdown(
+            id='ntype-filter',
+            options=[],
+            placeholder='Filter narrative stance',
+            style={'width': '50%', 'margin': '10px'}
+        )
+    ], style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'marginBottom': '20px'}),
 
     html.Div([
         dcc.Graph(id='cluster', style={'flex': '1', 'margin': '10px'}),
@@ -73,6 +87,8 @@ app.layout = html.Div([
 @app.callback(
     [
         Output('topic-filter', 'options'),
+        Output('emotion-filter', 'options'),
+        Output('ntype-filter', 'options'),
         Output('cluster', 'figure'),
         Output('proportions', 'figure'),
         Output('frequencies', 'figure'),
@@ -82,14 +98,16 @@ app.layout = html.Div([
     ],
     [
         Input('upload-data', 'contents'),
-        Input("topic-filter", "value")
+        Input("topic-filter", "value"),
+        Input("emotion-filter", "value"),
+        Input("ntype-filter", "value")
     ],
     [State('upload-data', 'filename')]
 )
-def update_graph(contents, selected_topic, filename):
+def update_graph(contents, selected_topic, selected_emotion, selected_ntype, filename):
     if not contents:
         empty_fig = go.Figure({"layout": {"title": "No Data Available"}})
-        return [], empty_fig, empty_fig, empty_fig, empty_fig, [], []
+        return [], [], [], empty_fig, empty_fig, empty_fig, empty_fig, [], []
 
     # Parse uploaded file
     content_type, content_string = contents.split(',')
@@ -112,13 +130,21 @@ def update_graph(contents, selected_topic, filename):
                 "annotations": [{"text": str(e), "showarrow": False}]
             }
         })
-        return [], error_fig, error_fig, error_fig, error_fig, [], []
+        return [], [], [], error_fig, error_fig, error_fig, error_fig, [], []
 
-    # Prepare topic filter options
+    # Prepare filter options
     topic_options = [{'label': topic, 'value': topic} for topic in df['topic'].unique()]
+    emotion_options = [{'label': emotion, 'value': emotion} for emotion in df['emotion'].unique()]
+    ntype_options = [{'label': ntype, 'value': ntype} for ntype in df['nType'].unique()]
 
-    # Apply topic filter if a topic is selected
-    filtered_df = df[df['topic'] == selected_topic] if selected_topic else df
+    # Apply filters
+    filtered_df = df
+    if selected_topic:
+        filtered_df = filtered_df[filtered_df['topic'] == selected_topic]
+    if selected_emotion:
+        filtered_df = filtered_df[filtered_df['emotion'] == selected_emotion]
+    if selected_ntype:
+        filtered_df = filtered_df[filtered_df['nType'] == selected_ntype]
 
     # Create a legend dictionary with unique 'name' values mapped to colors
     unique_names = filtered_df['name'].unique()
@@ -138,15 +164,15 @@ def update_graph(contents, selected_topic, filename):
                 "annotations": [{"text": str(e), "showarrow": False}]
             }
         })
-        return topic_options, error_fig, error_fig, error_fig, error_fig, [], []
+        return topic_options, emotion_options, ntype_options, error_fig, error_fig, error_fig, error_fig, [], []
 
     # Prepare table data
-    required_columns = ['id', 'name', 'text', 'qType', 'nType', 'topic', 'emotion']
+    required_columns = ['id', 'name', 'text', 'responseID', 'coherenceID', 'repeatID']
     filtered_df = filtered_df[required_columns]
     table_columns = [{"name": col, "id": col} for col in filtered_df.columns]
     table_data = filtered_df.to_dict("records")
 
-    return topic_options, fig1, fig2, fig3, fig4, table_columns, table_data
+    return topic_options, emotion_options, ntype_options, fig1, fig2, fig3, fig4, table_columns, table_data
 
 if __name__ == '__main__':
     app.run_server(debug=True)
