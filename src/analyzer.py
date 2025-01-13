@@ -93,11 +93,11 @@ def analyze_transcript(content, file_name):
     Returns:
     pd.DataFrame: A DataFrame loaded from the saved JSON file containing the processed data.
     """
-    import fathomPreprocessor
+    import fathom_preprocessor
     import parameterizer
 
     # Preprocess the file content
-    raw = fathomPreprocessor.prep_file(content, False)
+    raw = fathom_preprocessor.prep_file(content, False)
 
     # Parameterize the raw data (speakers, timespans, transcripts)
     data = parameterizer.parameterize(raw[0], raw[1], raw[2])
