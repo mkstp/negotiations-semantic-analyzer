@@ -1,205 +1,216 @@
-#this module contains the functions for detecting the parameters for analysis in a given transcript
+"""
+Marc St. Pierre 1/13/2025
+This module contains the functions for detecting the parameters for analysis in a given transcript.
+"""
+
 import re
 import spacy 
 from transformers import pipeline
 from scipy.signal import find_peaks
-sentimentPipeline = pipeline("sentiment-analysis", model='cardiffnlp/twitter-roberta-base-sentiment-latest')
-
 from sentence_transformers import SentenceTransformer, util
-sentencePipeline = SentenceTransformer("all-MiniLM-L6-v2")
 
-#helper functions
-def speechRateDetector(timeList, transcriptList):
-    #plotting how the speed of the conversation changed for each relationship  
+#Inittialize Pipelines
+sentiment_pipeline = pipeline(
+    "sentiment-analysis", model='cardiffnlp/twitter-roberta-base-sentiment-latest'
+)
+sentence_pipeline = SentenceTransformer("all-MiniLM-L6-v2")
 
-    #create list of speaking rates in wpm
-    speakingRates = []
+#Helper Functions
+def speech_rate_detector(time_list, transcript_list):
+    """Calculate the speaking rate (words per minute) for each segment."""
+    speaking_rates = []
 
-    for i in range(0, len(timeList)):
-        wordLength = len(transcriptList[i].split(" "))
-        x = int(wordLength/timeList[i] * 60)
-        if x < 400:
-            speakingRates.append(x)
-        else:
-            speakingRates.append(150)
-    
-    return speakingRates
+    for i in range(len(time_list)):
+        word_length = len(transcript_list[i].split(" "))
+        rate = int(word_length / time_list[i] * 60)
+        speaking_rates.append(rate if rate < 400 else 150)
 
-def narrativeDetector(sentence):
-    #this function takes in a list of sentences and codes them according to their main narrative pronoun use
-    output = ""
+    return speaking_rates
 
-    #split the sentences into words, then filter them through the narrative lists
+
+def narrative_detector(sentence):
+    """Categorize sentences by the predominant narrative pronoun use."""
     sentence = sentence.lower()
-    sentence = re.sub(r'(?:you know)|(?:i\'m like)', '', sentence) #removing a few stop words
-    words = re.split(r'(\s|\'|\,)', sentence)
-    wordSet = set(words)
+    sentence = re.sub(r'(?:you know)|(?:i\'m like)', '', sentence)
+    words = re.split(r'(\s|\'|,)', sentence)
+    word_set = set(words)
 
     #this configuration prioritizes third person pronoun detection followed by second, first, then passive (no pronoun)
-    #because I'm more interested to know when people are talking about other people behind their backs
-    if len(wordSet.intersection({'he', 'him', 'his', 'she', 'her', 'hers', 'they', 'them', 'their', "theirs", "themself", "themselves", "herself", "himself"})) > 0:
-        output = "third"
+    #because I'm more interested to know when people are talking about other people 
+    if word_set.intersection(
+        {
+            'he', 'him', 'his', 'she', 'her', 'hers', 'they', 'them', 'their', 'theirs',
+            'themself', 'themselves', 'herself', 'himself'
+        }
+    ):
+        return "third"
 
-    elif len(wordSet.intersection({"you", "your", "yours", "yourself", "yourselves"})) > 0:
-        output = "second"
+    if word_set.intersection(
+        {"you", "your", "yours", "yourself", "yourselves"}
+    ):
+        return "second"
 
-    elif len(wordSet.intersection({'i', "me", "my", "we", "our", "mine", "ours", "us", "myself", "ourselves"})) > 0:
-        output = "first"
+    if word_set.intersection(
+        {'i', "me", "my", "we", "our", "mine", "ours", "us", "myself", "ourselves"}
+    ):
+        return "first"
 
-    else:
-        if len(sentence) > 1:
-            output = "passive"
+    return "passive" if len(sentence) > 1 else ""
 
-    return output
 
-def questionDetector(sentence):
-    #detects whether a question is open ended or not
-    output = ""
-
+def question_detector(sentence):
+    """Determine whether a question is open-ended or closed-ended."""
     if "?" in sentence:
-        sentence = sentence.lower()
-        words = re.split(r'(\s|\')', sentence)
-        wordSet = set(words)
-        if len(wordSet.intersection({"why", "how", "what"})) > 0:
-            output = "openEnded"
-        else:
-            output = "closedEnded"
-    else:
-        output = None #not a question
+        words = re.split(r'(\s|\')', sentence.lower())
+        word_set = set(words)
+        if word_set.intersection({"why", "how", "what"}):
+            return "openEnded"
+        return "closedEnded"
 
-    return output
+    return None
 
-def affectDetector(sentence):
-    #compute the sentiment score of each sentence
-    sentiment = sentimentPipeline(sentence)[0]
 
-    return (sentiment['label'], sentiment['score'])
+def affect_detector(sentence):
+    """Compute the sentiment score of a sentence."""
+    sentiment = sentiment_pipeline(sentence)[0]
+    return sentiment['label'], sentiment['score']
 
-def summaryGenerator(sentence):
+
+def summary_generator(sentence):
+    """Generate a summary using a pre-trained summarization model. does not work well for conversational data"""
     summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
     summary = summarizer(
-        sentence, 
-        max_length=100, 
-        min_length=80, 
-        do_sample=False)
-    
+        sentence,
+        max_length=100,
+        min_length=80,
+        do_sample=False
+    )
     return summary[0]['summary_text']
 
-def sentenceTagger(sentence):
+
+def sentence_tagger(sentence):
+    """Tag sentences with parts of speech."""
     nlp = spacy.load("en_core_web_sm")
     data = nlp(sentence)
-    posTags = [(token.text, token.pos_, spacy.explain(token.pos_)) for token in data]
+    return [(token.text, token.pos_, spacy.explain(token.pos_)) for token in data]
 
-    return posTags
 
-def similarityDetector(sentenceList):
-    #enconde and run sentences through the nlp model
-    embeddings = sentencePipeline.encode(sentenceList, batch_size=32)
-    similarities = sentencePipeline.similarity(embeddings, embeddings)
-    
-    return similarities
+def similarity_detector(sentence_list):
+    """Calculate similarity scores between sentences."""
+    embeddings = sentence_pipeline.encode(sentence_list, batch_size=32)
+    return sentence_pipeline.similarity(embeddings, embeddings)
 
-def matchTopic(transcriptList, topicList):
-    topicEmbeddings = sentencePipeline.encode(topicList, convert_to_tensor=True)
-    transcriptEmbeddings = sentencePipeline.encode(transcriptList, batch_size=32, convert_to_tensor=True)
+
+def match_topic(transcript_list, topic_list):
+    """Match transcript sentences to the most similar topic from a given list."""
+    topic_embeddings = sentence_pipeline.encode(topic_list, convert_to_tensor=True)
+    transcript_embeddings = sentence_pipeline.encode(
+        transcript_list, batch_size=32, convert_to_tensor=True
+    )
 
     results = []
-
-    for embedding in transcriptEmbeddings:
-        similarities = util.cos_sim(embedding, topicEmbeddings)
-        maxIdx = similarities.argmax().item()
-        score = similarities[0][maxIdx].item()
-
-        results.append((topicList[maxIdx], score))
+    for embedding in transcript_embeddings:
+        similarities = util.cos_sim(embedding, topic_embeddings)
+        max_idx = similarities.argmax().item()
+        score = similarities[0][max_idx].item()
+        results.append((topic_list[max_idx], score))
 
     return results
 
-def responsivenessCoherenceDetector(output, similarityTensors):
-# this function will break down for meetings with more than two people
+def responsiveness_coherence_detector(output, similarity_tensors):
+    """Evaluate similarity between turn-takers and their own statements."""
+    last_turn, my_last_turn_ids, last_turn_ids, this_turn_ids = 0, [], [], []
 
-    lastTurn, myLastTurnIDs, lastTurnIDs, thisTurnIDs,  = 0, [], [], []
+    for entry in output:
+        if entry['turn'] != last_turn:
+            last_turn, my_last_turn_ids, last_turn_ids, this_turn_ids = (
+                entry['turn'], last_turn_ids, this_turn_ids, []
+            )
 
-    for i in output:
-        if i['turn'] != lastTurn:
-            lastTurn, myLastTurnIDs, lastTurnIDs, thisTurnIDs = i['turn'], lastTurnIDs, thisTurnIDs, []
-
-        # Calculate responseScores
-        responseScores = [(id, float(similarityTensors[i['id']][id])) for id in lastTurnIDs]
-        if responseScores:  # Ensure there are scores to evaluate
-            maxResponsePair = max(responseScores, key=lambda x: x[1])  # Get (id, score) with max score
-            i['responseID'], i['responseScore'] = maxResponsePair[0], maxResponsePair[1]
+        # Calculate response scores
+        response_scores = [
+            (idx, float(similarity_tensors[entry['id']][idx])) for idx in last_turn_ids
+        ]
+        if response_scores:
+            max_response_pair = max(response_scores, key=lambda x: x[1])
+            entry['responseID'], entry['responseScore'] = max_response_pair
         else:
-            i['responseID'], i['responseScore'] = None, None  # Handle cases with no scores
+            entry['responseID'], entry['responseScore'] = None, None
 
-        # Calculate selfScores based on the speaker's turn IDs
-        selfScores = [(id, float(similarityTensors[i['id']][id])) for id in (thisTurnIDs + myLastTurnIDs)]
-        if selfScores:  # Ensure there are scores to evaluate
-            maxSelfPair = max(selfScores, key=lambda x: x[1])  # Get (id, score) with max score
-            i['coherenceID'], i['coherenceScore'] = maxSelfPair[0], maxSelfPair[1]
+        # Calculate self scores
+        self_scores = [
+            (idx, float(similarity_tensors[entry['id']][idx]))
+            for idx in (this_turn_ids + my_last_turn_ids)
+        ]
+        if self_scores:
+            max_self_pair = max(self_scores, key=lambda x: x[1])
+            entry['coherenceID'], entry['coherenceScore'] = max_self_pair
         else:
-            i['coherenceID'], i['coherenceScore'] = None, None  # Handle cases with no scores
+            entry['coherenceID'], entry['coherenceScore'] = None, None
 
-        repScores = [(id, float(similarityTensors[i['id']][id])) for id in range(i['id'] - len(thisTurnIDs + lastTurnIDs + myLastTurnIDs) - 1, -1, -1)]
-        if repScores: # Ensure there are scores to evaluate
-            maxRepPair = max(repScores, key=lambda x: x[1])  # Get (id, score) with max score
-            i['repeatID'], i['repeatScore'] = maxRepPair[0], maxRepPair[1]
+        # Calculate repetition scores
+        rep_scores = [
+            (idx, float(similarity_tensors[entry['id']][idx]))
+            for idx in range(entry['id'] - len(this_turn_ids + last_turn_ids + my_last_turn_ids) - 1, -1, -1)
+        ]
+        if rep_scores:
+            max_rep_pair = max(rep_scores, key=lambda x: x[1])
+            entry['repeatID'], entry['repeatScore'] = max_rep_pair
         else:
-            i['repeatID'], i['repeatScore'] = None, None  # Handle cases with no scores   
+            entry['repeatID'], entry['repeatScore'] = None, None
 
-        thisTurnIDs.append(i['id'])
+        this_turn_ids.append(entry['id'])
 
         # Calculate local maximum distribution
-        similarityDistribution = [float(similarityTensors[i['id']][id]) for id in range(0, i['id'] - 1)]
-        peaks, properties = find_peaks(similarityDistribution, height=0.1, prominence=0.3)
-        i['localMaxDistro'] = peaks.tolist()
+        similarity_distribution = [
+            float(similarity_tensors[entry['id']][idx]) for idx in range(0, entry['id'] - 1)
+        ]
+        peaks, _ = find_peaks(similarity_distribution, height=0.1, prominence=0.3)
+        entry['localMaxDistro'] = peaks.tolist()
 
     return output
 
-#main function
-def parameterize(speakerList, timeList, transcriptList):
-    #speakerList: strings: names of each speaker
-    #timeList: integers: timespan in seconds 
-    #transcriptList: strings: what was said
-    #all indices must align, so anyList[idx] must match the speaker to timespan to transcript
+# Main function
+def parameterize(speaker_list, time_list, transcript_list):
+    """Extract parameters for analysis from a transcript."""
     output = []
+    speech_rates = speech_rate_detector(time_list, transcript_list)
 
-    speechRates = speechRateDetector(timeList, transcriptList)
-
-    sentenceList = []
+    sentence_list = []
     count = 0
-    
-    for idx1, speaker in enumerate(speakerList):
 
-        delimiter= r'[.!?]|(?: But )'
+    for idx1, speaker in enumerate(speaker_list):
+        delimiter = r'[.!?]|(?: But )'
         pattern = f'(.*?{delimiter})'
-        transcript = re.findall(pattern, transcriptList[idx1])
+        transcript = re.findall(pattern, transcript_list[idx1])
 
         for sentence in transcript:
-            time = int(len(sentence.split()) * 60 / speechRates[idx1])
+            time = int(len(sentence.split()) * 60 / speech_rates[idx1])
             if time <= 1:
                 continue
-            sentenceList.append(sentence)
-            emotion = affectDetector(sentence)
+
+            sentence_list.append(sentence)
+            emotion = affect_detector(sentence)
 
             data = {
                 'id': count,
                 'turn': idx1,
                 'name': speaker,
-                'previous': " " if idx1 == 0 else speakerList[idx1 - 1],
+                'previous': " " if idx1 == 0 else speaker_list[idx1 - 1],
                 'text': sentence,
                 'airTime': time,
-                'wpm': speechRates[idx1],
-                'qType': questionDetector(sentence),
-                'nType': narrativeDetector(sentence),
+                'wpm': speech_rates[idx1],
+                'qType': question_detector(sentence),
+                'nType': narrative_detector(sentence),
                 'topic': "test",
                 'topicConfidence': 1.0,
                 'emotion': emotion[0],
-                'emotionConfidence': emotion[1]
+                'emotionConfidence': emotion[1],
             }
-            count+=1
+            count += 1
             output.append(data)
 
-    similarities = similarityDetector(sentenceList)
-    output = responsivenessCoherenceDetector(output, similarities)
-    
+    similarities = similarity_detector(sentence_list)
+    output = responsiveness_coherence_detector(output, similarities)
+
     return output
