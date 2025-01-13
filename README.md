@@ -1,10 +1,33 @@
-# Echoes and Omissions: A Semantic Similarity Analysis of Coherence, Responsiveness, and Repetition in Negotiation Dynamics
 
-This project investigates how communication similarity influences negotiation outcomes, using time-stamped, speaker-identified transcripts to measure both procedural and semantic alignment. The goal is to understand conversational speech through the lens of similarity to develop interventions that enhance collaboration between negotiators.
+# Summary
 
-The hypothesis is that negotiators who speak similarly achieve more collaborative outcomes. Conversely, significant disparities in how speech is used may lead to less favorable results.
+This project investigates how communication similarity influences negotiation outcomes, using time-stamped, speaker-identified transcripts to measure semantic alignment. The goal is to understand conversational speech through the lens of similarity to develop interventions that enhance collaboration between negotiators.
 
-Given a transcript, the application generates a json file with formatted objects:
+A well studied phenemenon: negotiators who speak similarly achieve more collaborative outcomes. Conversely, disparities in speech lead to less favorable results. Is this true at the linguistic level of semantics?
+
+# How to:
+
+1. Install necessary requirements
+2. Open terminal and run app.py found in the src folder
+3. This will open up a clickable link to your default browser
+4. From the 'Drag and Drop' button at the top of the page, select "demo_transcript.json"
+5. Wait a few seconds (will say 'updating...')
+6. Results of conversation should be visualized
+
+## How to generate your own transcripts and json files
+
+1. Sign up for the free meeting assistant software [Fathom](https://fathom.video/home)
+2. Host a virtual meeting with one other person (currently only tested to work with transcripts up to 2 speakers)
+3. Save a copy of the transcript as a .txt file (fathom_preprocessor.py best before date: 1/13/2025)
+4. Open terminal and run app.py found in the src folder
+4. Follow the link and use the 'Drag and Drop' button and select 'your_transcript.txt'
+5. Wait between 15s to few minutes (will say 'updating...', this may take longer if your are downloading ai models for the first time)
+6. 'your_transcript.json' will be saved in the same directory
+7. Results of conversation should be visualized
+
+# Parameterized Sentence Output Format
+
+Given a fathom transcript, the application generates a json file with formatted objects:
 
 ```
 "id": 35,
@@ -32,6 +55,9 @@ Given a transcript, the application generates a json file with formatted objects
 ```
 
 The json objects log data on individual sentences, where each turn represents a block of sentences where one speaker speaks. 
+
+# Echoes and Omissions: A Semantic Similarity Analysis of Coherence, Responsiveness, and Repetition in Negotiation Dynamics
+
 
 ## Temporal similarity
  
