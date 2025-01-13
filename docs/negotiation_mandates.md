@@ -8,7 +8,9 @@ In contrast, interest-based bargaining (IBB) shifts the focus from rigid positio
 The Parable of the Orange illustrates the stark difference between the two methods. In position-based bargaining, two parties arguing over an orange each receive half, satisfying neither. However, in interest-based bargaining, their underlying interests—using the orange for zest versus juice—are explored. This results in one party receiving the orange skin and the other the pulp, achieving an optimal outcome for both.
 
 IBB encourages creativity, collaboration, and trust, leading to solutions that address the needs of all parties while maintaining harmony and fostering sustainable relationships. It demonstrates the advantages of focusing on shared interests over adversarial positions.
-Description
+
+## Description
+
 The following activity is a form of ‘orange problem’, where both sides have mandates that are seemingly incompatible. But through interest based negotiation, both sides can achieve 100% of their mandates provided they establish trust and share all relevant information. 
 
 # Party 1 - Negotiation Brief
