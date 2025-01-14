@@ -1,5 +1,6 @@
 
-# Echoes and Omissions: A Semantic Similarity Analysis of Coherence, Responsiveness, and Repetition in a Roleplay Experiment
+# Echoes and Omissions: 
+## A Semantic Similarity Analysis of Coherence, Responsiveness, and Repetition in a Negotiation Roleplay Experiment
 
 6 volunteers participated in a 20minute negotiation roleplay in a virtual setting. Participants were randomly paired, then separated into parties and each given negotiation mandates.  
 
@@ -19,13 +20,13 @@ Coherence measures how self-similar a negotiator's statements are within their t
 
 Responsiveness measures how similar a negotiator’s statements are to their partner’s previous statements, based on the maximum cosine similarity. Both metrics are derived using a transformer model (ai) to embed semantic meaning into vector space and calculate distances between vectors. 
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/response_coherence_scatter.png?raw=true)
 
 This analysis compares linear regression lines plotting 'coherence' against 'responsiveness' for each negotiator. Each dot represents a single statement (one sentence) made by a negotiator. 
 
 The following overview examines the proportion of statements within each quadrant of the graph.
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/cluster_analysis.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/cluster_analysis.png?raw=true)
 
 ## Accommodating = High Responsive & Low Coherence: Upper Left Quadrant Analysis
 If we divide the graph into quadrants, the upper left portion of the graph represents statements that are very responsive to what the last negotiator has said, but have little to do with what the current negotiator is trying to say. Example:
@@ -136,7 +137,7 @@ In this negotiation, both agreed that protecting the environment was important.
 
 The following graph shows the distribution of the sum of scores for each statement colored by name. The negative values are the coherence levels by statement and the positive values are the levels of responses to those statements. The distribution differences reveal areas of alignment or divergence in what each negotiator prioritized within that turn.
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/coh-res-rep.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/coh-res-rep.png?raw=true)
 
 Coherence and responsiveness are imperfect mirrors of each other. For instance, in the ID range 10–25, the blue coherence bars reflect Y C's self-referential statements, while the red response bars show L S's selective responses. During this range, Y C's turn was highly coherent, with many statements interrelated and elaborative. In contrast, L S's responses highlight the selective importance placed on Y C's points. 
 
@@ -211,7 +212,7 @@ L S strongest responses are to ID 22 and 23 in Y C's turn:
 
 ## Analysis of Accumulated Repetition 
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/repeat_scores.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/repeat_scores.png?raw=true)
 
 This chart represents out of turn repetitions of statements from earlier points in the conversation. A repetition is defined as the highest scoring similarity statement that is not in the present or previous turn. Strong repetitions indicate highly similar word choice and semantic alignment. An example:
 
@@ -262,13 +263,13 @@ Coherence measures how self-similar a negotiator's statements are within their t
 
 Responsiveness measures how similar a negotiator’s statements are to their partner’s previous statements, based on the maximum cosine similarity. Both metrics are derived using a transformer model (ai) to embed semantic meaning into vector space and calculate distances between vectors. 
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/response_coherence_scatter.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/response_coherence_scatter.png?raw=true)
 
 This analysis compares linear regression lines plotting 'coherence' against 'responsiveness' for each negotiator. Each dot represents a single statement (one sentence) made by a negotiator. 
 
 The following overview examines the proportion of statements within each quadrant of the graph.
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/cluster_analysis.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/cluster_analysis.png?raw=true)
 
 ## Accommodating = High Responsive & Low Coherence: Upper Left Quadrant Analysis
 If we divide the graph into quadrants, the upper left portion of the graph represents statements that are very responsive to what the last negotiator has said, but have little to do with what the current negotiator is trying to say. Example:
@@ -379,7 +380,7 @@ In this negotiation, both agreed that protecting the environment was important.
 
 The following graph shows the distribution of the sum of scores for each statement colored by name. The negative values are the coherence levels by statement and the positive values are the levels of responses to those statements. The distribution differences reveal areas of alignment or divergence in what each negotiator prioritized within that turn.
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/coh-res-rep.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/coh-res-rep.png?raw=true)
 
 Coherence and responsiveness are imperfect mirrors of each other. For instance, in the ID range 10–25, the blue coherence bars reflect Y C's self-referential statements, while the red response bars show L S's selective responses. During this range, Y C's turn was highly coherent, with many statements interrelated and elaborative. In contrast, L S's responses highlight the selective importance placed on Y C's points. 
 
@@ -454,7 +455,7 @@ L S strongest responses are to ID 22 and 23 in Y C's turn:
 
 ## Analysis of Accumulated Repetition 
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/demoContent/repeat_scores.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/repeat_scores.png?raw=true)
 
 This chart represents out of turn repetitions of statements from earlier points in the conversation. A repetition is defined as the highest scoring similarity statement that is not in the present or previous turn. Strong repetitions indicate highly similar word choice and semantic alignment. An example:
 
