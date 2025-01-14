@@ -87,7 +87,7 @@ Using sentiment analysis, this compares negotiators' emotional expressions, hypo
 The software will indicate how emotions are distributed across various topics. By flagging negative emotion, we can design interventions to reframe them to positive interests. 
 
 > [!NOTE]
-> For an in depth analysis and how and why the following variables are defined as such, please review the [results](/negotiation_results.md) file
+> For an in depth analysis and how and why the following variables are defined as such, please review the [results](/doc/negotiation_results.md) file
 
 - coherence
 - responsiveness
@@ -104,4 +104,4 @@ A repetition is defined as the highest scoring similarity statement that is not 
 This gives you the sentence indices of the relative peaks in the similarity distributions of all sentences from both speakers for all previous turns included the current one. 
 
 > [!Note]
-> A [bibiography](:doc:/references.md) and [acknowledgements](/acknowledgments.md) for this project are available in the documentation folder
+> A [bibliography](/doc/references.md) and [acknowledgements](/doc/acknowledgments.md) for this project are available in the documentation folder
