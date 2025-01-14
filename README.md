@@ -7,13 +7,12 @@ A well studied phenemenon: negotiators who speak similarly achieve more collabor
 
 ## Example App Outputs:
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/response_coherence_scatter.png?raw=true)
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/cluster_analysis.png?raw=true)
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/emotionplot.png?raw=true)
 
 # How to:
 
-1. Install necessary requirements
+1. Install necessary [requirements](/doc/requirements.txt)
 2. Open terminal and run app.py found in the src folder
 3. This will open up a clickable link to your default browser
 4. From the 'Drag and Drop' button at the top of the page, select "demo_transcript.json"
@@ -30,7 +29,6 @@ A well studied phenemenon: negotiators who speak similarly achieve more collabor
 5. Wait between 15s to few minutes (will say 'updating...', this may take longer if your are downloading ai models for the first time)
 6. 'your_transcript.json' will be saved in the same directory
 7. Results of conversation should be visualized
-
 
 # JSON Output Format and Description of Parameters
 
@@ -86,9 +84,6 @@ Using sentiment analysis, this compares negotiators' emotional expressions, hypo
 
 The software will indicate how emotions are distributed across various topics. By flagging negative emotion, we can design interventions to reframe them to positive interests. 
 
-> [!NOTE]
-> For an in depth analysis and how and why the following variables are defined as such, please review the [results](/doc/negotiation_results.md) file
-
 - coherence
 - responsiveness
 - repetition
@@ -102,6 +97,11 @@ A repetition is defined as the highest scoring similarity statement that is not 
 - localMaxDistro
 
 This gives you the sentence indices of the relative peaks in the similarity distributions of all sentences from both speakers for all previous turns included the current one. 
+
+# Interpreting Visuals
+
+> [!NOTE]
+> For an in depth analysis of how each graph is used in the context of a negotiation, please review the [experiment results](/doc/negotiation_results.md) file
 
 > [!Note]
 > A [bibliography](/doc/references.md) and [acknowledgements](/doc/acknowledgments.md) for this project are available in the documentation folder
