@@ -37,7 +37,7 @@ Comparing how positively people speak about others, themselves etc.
 1. Install necessary [requirements](/doc/requirements.txt)
 2. Open terminal from the root folder and run *python src/app.py* 
 3. This will open up a clickable link (host ip address) to a webpage
-4. From the 'Drag and Drop' button at the top of the webpage, navigate them select "demo_transcript.json"
+4. From the 'Drag and Drop' button at the top of the webpage, navigate then select "demo_transcript.json"
 5. Wait a few seconds
 6. Results of conversation should be visualized
 
@@ -122,7 +122,7 @@ A repetition is defined as the highest scoring similarity statement that is not 
 
 - localMaxDistro
 
-This gives you the sentence indices of the relative peaks in the similarity distributions of all sentences from both speakers for all previous turns included the current one. 
+This provides the sentence numbers where similarity scores peak between all sentences from both speakers, across all previous and current turns.
 
 > [!Note]
 > A [bibliography](/doc/references.md) and [acknowledgements](/doc/acknowledgments.md) for this project are available in the documentation folder
