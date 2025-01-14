@@ -2,13 +2,16 @@
 # Echoes and Omissions: 
 ## A Semantic Similarity Analysis of Coherence, Responsiveness, and Repetition in a Negotiation Roleplay Experiment
 
-6 volunteers participated in a 20minute negotiation roleplay in a virtual setting. Participants were randomly paired, then separated into parties and each given negotiation mandates.  
+4 volunteers participated in a 20minute negotiation roleplay in a virtual setting. Participants were randomly paired, then separated into parties and each given negotiation mandates.  
 
 Party 1's Core Mandate Objective: secure access from a local fishing village to harvest a rare algae for research to cure Alzheimer's 
 
 Party 2's Core Mandate Objective: prevent the imminent collapse of the village’s fishing economy, where any depletion of fundamental food sources will cost the livelihoods and health of the village's population.
 
 This roleplay exercise is a form of ‘orange problem’, where both sides have mandates that are seemingly incompatible. But through interest based negotiation, both sides can achieve 100% of their mandates provided they establish trust and share all relevant information. 
+
+> [!NOTE]
+> Full negotiation briefs and description of activity is available [here](/doc/negotiation_mandates.md) 
 
 ## Analysis of Semantic Similarity Results
 

@@ -5,7 +5,7 @@ Brady Kirk: Negotiation participant
 
 Daniel Coculescu: Negotiation participant
 
-Leigh Sembaluk: Project strategy and guidance
+Leigh Sembaluk: Project strategy and guidance; Negotiation participant
 
 Marek Markowski: Tester
 
