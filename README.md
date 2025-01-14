@@ -5,6 +5,12 @@ This project investigates how communication similarity influences negotiation ou
 
 A well studied phenemenon: negotiators who speak similarly achieve more collaborative outcomes. Conversely, disparities in speech lead to less favorable results. Is this true at the linguistic level of semantics?
 
+## Example App Outputs:
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/emotionplot.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/response_coherence_scatter.png?raw=true)
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/repeat_scores.png?raw=true)
+
 # How to:
 
 1. Install necessary requirements
@@ -25,9 +31,10 @@ A well studied phenemenon: negotiators who speak similarly achieve more collabor
 6. 'your_transcript.json' will be saved in the same directory
 7. Results of conversation should be visualized
 
-# Parameterized Sentence Output Format
 
-Given a fathom transcript, the application generates a json file with formatted objects:
+# JSON Output Format and Description of Parameters
+
+Given a fathom transcript, parameterizer.py generates a json file with formatted objects:
 
 ```
 "id": 35,
@@ -66,8 +73,6 @@ The json objects log data on individual sentences, where each turn represents a 
 - question type (open-ended or closed-ended)
 - narrative type (first, second, third, passive)
 
-![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/emotionplot.png?raw=true)
-
 Negotiations involve patterns of self-disclosure, questioning, and acknowledgment, with balanced proportions of these elements indicating healthy collaboration. A rule-based system labels narrative and question types.
 
 Collaborative outcomes are less likely if negotiations focus heavily on third-person statements (e.g., references to people not present). Balanced "I" and "you" statements are preferred, as an imbalance may signal one party dominating or withholding their position.
@@ -81,9 +86,8 @@ Using sentiment analysis, this compares negotiators' emotional expressions, hypo
 
 The software will indicate how emotions are distributed across various topics. By flagging negative emotion, we can design interventions to reframe them to positive interests. 
 
-[!NOTE]
-
-For an in depth analysis and how and why the following variables are defined as such, please review the negotiation_results.md in the docs folder
+> [!NOTE]
+> For an in depth analysis and how and why the following variables are defined as such, please review the [results](:doc:/negotiation_results.md) file
 
 - coherence
 - responsiveness
@@ -99,6 +103,5 @@ A repetition is defined as the highest scoring similarity statement that is not 
 
 This gives you the sentence indices of the relative peaks in the similarity distributions of all sentences from both speakers for all previous turns included the current one. 
 
-[!Note]
-
-A bibiography and acknowledgements for this project are available in the docs folder 
+> [!Note]
+> A [bibiography](:doc:/references.md) and [acknowledgements](:doc:/acknowledgments.md) for this project are available in the documentation folder
