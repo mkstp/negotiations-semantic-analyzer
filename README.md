@@ -13,20 +13,25 @@ A well studied phenemenon: negotiators who speak similarly achieve more collabor
 # How to:
 
 1. Install necessary [requirements](/doc/requirements.txt)
-2. Open terminal and run app.py found in the src folder
-3. This will open up a clickable link to your default browser
-4. From the 'Drag and Drop' button at the top of the page, select "demo_transcript.json"
-5. Wait a few seconds (will say 'updating...')
+2. Open terminal from the root folder and run *python src/app.py* 
+3. This will open up a clickable link (host ip address) to a webpage
+4. From the 'Drag and Drop' button at the top of the webpage, navigate them select "demo_transcript.json"
+5. Wait a few seconds
 6. Results of conversation should be visualized
 
 ## How to generate your own transcripts and json files
 
 1. Sign up for the free meeting assistant software [Fathom](https://fathom.video/home)
 2. Host a virtual meeting with one other person (currently only tested to work with transcripts up to 2 speakers)
-3. Save a copy of the transcript as a .txt file (fathom_preprocessor.py best before date: 1/13/2025)
-4. Open terminal and run app.py found in the src folder
+3. Save a copy of the transcript as 'your_transcript.txt'
+
+> [!NOTE]
+> the app uses this [parser module](/src/fathom_preprocessor.py) for format the transcript for parameterization 
+> best before date: 1/13/2025
+
+4. Open terminal from the root folder and run *python src/app.py* 
 4. Follow the link and use the 'Drag and Drop' button and select 'your_transcript.txt'
-5. Wait between 15s to few minutes (will say 'updating...', this may take longer if your are downloading ai models for the first time)
+5. Wait between 15s to few minutes (this may take longer if your are downloading ai models for the first time)
 6. 'your_transcript.json' will be saved in the same directory
 7. Results of conversation should be visualized
 
