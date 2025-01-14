@@ -16,7 +16,7 @@ A well studied phenemenon: negotiators who speak similarly achieve more collabor
 
 ## How to generate your own transcripts and json files
 
-1. Sign up for the free meeting assistant software ![Fathom](https://fathom.video/home)
+1. Sign up for the free meeting assistant software [Fathom](https://fathom.video/home)
 2. Host a virtual meeting with one other person (currently only tested to work with transcripts up to 2 speakers)
 3. Save a copy of the transcript as a .txt file (fathom_preprocessor.py best before date: 1/13/2025)
 4. Open terminal and run app.py found in the src folder
@@ -82,6 +82,7 @@ Using sentiment analysis, this compares negotiators' emotional expressions, hypo
 The software will indicate how emotions are distributed across various topics. By flagging negative emotion, we can design interventions to reframe them to positive interests. 
 
 [!NOTE]
+
 For an in depth analysis and how and why the following variables are defined as such, please review the negotiation_results.md in the docs folder
 
 - coherence
@@ -99,4 +100,5 @@ A repetition is defined as the highest scoring similarity statement that is not 
 This gives you the sentence indices of the relative peaks in the similarity distributions of all sentences from both speakers for all previous turns included the current one. 
 
 [!Note]
+
 A bibiography and acknowledgements for this project are available in the docs folder 
