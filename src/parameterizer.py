@@ -5,6 +5,7 @@ This module contains the functions for detecting the parameters for analysis in 
 
 import re
 import spacy 
+
 from transformers import pipeline
 from scipy.signal import find_peaks
 from sentence_transformers import SentenceTransformer, util

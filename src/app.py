@@ -5,11 +5,13 @@ Basic Dash App implementation of Negotiations Analyzer Web Application
 
 import base64
 import io
-from dash import Dash, dcc, html, dash_table, Input, Output, State
-import plotly.graph_objects as go
+
 import pandas as pd
-import visualizer
+import plotly.graph_objects as go
+from dash import Dash, dcc, html, dash_table, Input, Output, State
+
 import analyzer
+import visualizer
 
 # Initialize the Dash app
 app = Dash(__name__)

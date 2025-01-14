@@ -3,11 +3,12 @@ Marc St. Pierre 1/13/2025
 This module contains functions to generate the plots that display conversational data in the app
 """
 
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.subplots as sp
-import numpy as np
-from sklearn.linear_model import LinearRegression
 
 
 def plot_wpma_air_time(df, legend):
