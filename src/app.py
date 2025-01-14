@@ -17,9 +17,6 @@ import visualizer
 app = Dash(__name__)
 app.title = "Negotiations Analysis Dashboard"
 
-# Placeholder for data
-df = pd.DataFrame()
-
 app.layout = html.Div([
     html.H1("Negotiations Analysis Dashboard", style={'textAlign': 'center'}),
 
@@ -121,7 +118,6 @@ def update_graph(contents, selected_topic, selected_emotion, selected_ntype, fil
     decoded = base64.b64decode(content_string)
 
     try:
-        global df
         if filename.endswith('.txt'):
             # Analyze .txt file
             df = analyzer.analyze_transcript(decoded.decode('utf-8'), filename)
