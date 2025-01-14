@@ -23,7 +23,7 @@ Shows how negotiators selectively respond to what the other negotiator is talkin
 
 Distribution of conversational modes (topics) in a transcript
 
-# Not in app (but functionality is there)
+## Not in app (but functionality is there)
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/emotionplot.png?raw=true)
 
