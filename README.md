@@ -5,10 +5,32 @@ This project investigates how communication similarity influences negotiation ou
 
 A well studied phenemenon: negotiators who speak similarly achieve more collaborative outcomes. Conversely, disparities in speech lead to less favorable results. Is this true at the linguistic level of semantics?
 
-## Example App Outputs:
+# Visualizations
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/response_coherence_scatter.png?raw=true)
+
+Scatter plot of semantic similarity which correlates self-similarity (coherence) with partner-similarity (responsiveness)
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/cluster_analysis.png?raw=true)
+
+Based on semantic similarity, 4 general patterns of negotiation are observed, along with their relative strengths
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/coh-res-rep.png?raw=true)
+
+Shows how negotiators selectively respond to what the other negotiator is talking about
+
+![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/repeat_scores.png?raw=true)
+
+Distribution of conversational modes (topics) in a transcript
+
+# Not in app (but functionality is there)
+
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/emotionplot.png?raw=true)
+
+Comparing how positively people speak about others, themselves etc.
+
+> [!NOTE]
+> For an in depth analysis of how each graph is used in the context of a negotiation, please review the [experiment results](/doc/negotiation_results.md)
 
 # How to:
 
@@ -101,11 +123,6 @@ A repetition is defined as the highest scoring similarity statement that is not 
 - localMaxDistro
 
 This gives you the sentence indices of the relative peaks in the similarity distributions of all sentences from both speakers for all previous turns included the current one. 
-
-# Interpreting Visuals
-
-> [!NOTE]
-> For an in depth analysis of how each graph is used in the context of a negotiation, please review the [experiment results](/doc/negotiation_results.md) file
 
 > [!Note]
 > A [bibliography](/doc/references.md) and [acknowledgements](/doc/acknowledgments.md) for this project are available in the documentation folder
