@@ -23,7 +23,7 @@ Shows how negotiators selectively respond to what the other negotiator is talkin
 
 Distribution of conversational modes (topics) in a transcript
 
-## Not in app (but functionality is there)
+### Not in app (but functionality is there)
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/emotionplot.png?raw=true)
 
@@ -51,8 +51,8 @@ Comparing how positively people speak about others, themselves etc.
 > the app uses this [parser module](/src/fathom_preprocessor.py) to prep the file for parameterization. Best before date: 1/13/2025
 
 4. Open terminal from the root folder and run *python src/app.py* 
-4. Follow the link and use the 'Drag and Drop' button and select 'your_transcript.txt'
-5. Wait between 15s to few minutes (this may take longer if your are downloading ai models for the first time)
+4. Follow the link and use the 'Drag and Drop' button then select 'your_transcript.txt'
+5. Wait between 15s to a few minutes (may take longer if you're downloading AI models for the first time)
 6. 'your_transcript.json' will be saved in the same directory
 7. Results of conversation should be visualized
 
