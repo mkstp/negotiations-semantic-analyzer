@@ -26,8 +26,7 @@ A well studied phenemenon: negotiators who speak similarly achieve more collabor
 3. Save a copy of the transcript as 'your_transcript.txt'
 
 > [!NOTE]
-> the app uses this [parser module](/src/fathom_preprocessor.py) for format the transcript for parameterization 
-> best before date: 1/13/2025
+> the app uses this [parser module](/src/fathom_preprocessor.py) to prep the file for parameterization. Best before date: 1/13/2025
 
 4. Open terminal from the root folder and run *python src/app.py* 
 4. Follow the link and use the 'Drag and Drop' button and select 'your_transcript.txt'
@@ -37,7 +36,7 @@ A well studied phenemenon: negotiators who speak similarly achieve more collabor
 
 # JSON Output Format and Description of Parameters
 
-Given a fathom transcript, parameterizer.py generates a json file with formatted objects:
+Given a fathom transcript, the [parameterizer module](/src/parameterizer.py) generates a json file with formatted objects:
 
 ```
 "id": 35,
