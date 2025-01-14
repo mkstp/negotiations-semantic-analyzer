@@ -1,12 +1,14 @@
 
-Leigh Sembaluk
+Arianne Dee: Code review
 
-Yichun Cheng
+Brady Kirk: Negotiation Participant
 
-Marek Markowski
+Daniel Coculescu: Negotiation Participant
 
-Daniel Coculescu
+Leigh Sembaluk: Project strategy and guidance
 
-Brady Kirk
+Marek Markowski: Tester
 
-Arianne Dee
+Yichun Cheng: Negotiation participant
+
+
