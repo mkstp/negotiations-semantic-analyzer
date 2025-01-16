@@ -133,33 +133,33 @@ def responsiveness_coherence_detector(output, similarity_tensors):
             previous_turn_ids = this_turn_ids
             this_turn_ids = []
 
-        all_scores = float(similarity_tensors[entry['id']])
+        all_scores = similarity_tensors[entry['id']]
 
-        # Calculate response scores
-        response_scores = [
-            (idx, all_scores[idx]) for idx in previous_turn_ids
-        ]
-        if response_scores:
+        if previous_turn_ids:
+            # Calculate response scores
+            response_scores = [
+                (idx, float(all_scores[idx])) for idx in previous_turn_ids
+            ]
             max_response_pair = max(response_scores, key=lambda x: x[1])
             entry['responseID'], entry['responseScore'] = max_response_pair
         else:
             entry['responseID'], entry['responseScore'] = None, None
 
-        # Calculate self scores
-        self_scores = [
-            (idx, all_scores[idx]) for idx in (this_turn_ids + my_previous_turn_ids)
-        ]
-        if self_scores:
+        if (this_turn_ids + my_previous_turn_ids):
+            # Calculate self scores
+            self_scores = [
+                (idx, float(all_scores[idx])) for idx in (this_turn_ids + my_previous_turn_ids)
+            ]
             max_self_pair = max(self_scores, key=lambda x: x[1])
             entry['coherenceID'], entry['coherenceScore'] = max_self_pair
         else:
             entry['coherenceID'], entry['coherenceScore'] = None, None
 
-        # Calculate repetition scores
-        rep_scores = [
-            (idx, all_scores[idx]) for idx in range(entry['id'] - len(this_turn_ids + previous_turn_ids + my_previous_turn_ids) - 1, -1, -1)
-        ]
-        if rep_scores:
+        if entry['turn'] > 2:
+            # Calculate repetition scores
+            rep_scores = [
+                (idx, float(all_scores[idx])) for idx in range(entry['id'] - len(this_turn_ids + previous_turn_ids + my_previous_turn_ids) - 1, -1, -1)
+            ]
             max_rep_pair = max(rep_scores, key=lambda x: x[1])
             entry['repeatID'], entry['repeatScore'] = max_rep_pair
         else:
@@ -169,7 +169,7 @@ def responsiveness_coherence_detector(output, similarity_tensors):
 
         # Calculate local maximum distribution
         similarity_distribution = [
-            all_scores[idx] for idx in range(0, entry['id'] - 1)
+            float(all_scores[idx]) for idx in range(0, entry['id'] - 1)
         ]
         peaks, _ = find_peaks(similarity_distribution, height=0.1, prominence=0.3)
         entry['localMaxDistro'] = peaks.tolist()
