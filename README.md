@@ -5,6 +5,9 @@ This project investigates how communication similarity influences negotiation ou
 
 A well studied phenemenon: negotiators who speak similarly achieve more collaborative outcomes. Conversely, disparities in speech lead to less favorable results. Is this true at the linguistic level of semantics?
 
+> [!NOTE]
+> Example ouputs and instructions for running the app continue below. For theory and an in-depth analysis of results please review the [experiment results](/doc/negotiation_results.md)
+
 # Visualizations
 
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/response_coherence_scatter.png?raw=true)
@@ -28,9 +31,6 @@ Distribution of conversational modes (topics) in a transcript
 ![alt text](https://github.com/mkstp/convo-analyzer/blob/main/res/emotionplot.png?raw=true)
 
 Comparing how positively people speak about others, themselves etc.
-
-> [!NOTE]
-> For an in depth analysis of how each graph is used in the context of a negotiation, please review the [experiment results](/doc/negotiation_results.md)
 
 # How to:
 
@@ -126,3 +126,4 @@ This provides the sentence numbers where similarity scores peak between all sent
 
 > [!Note]
 > A [bibliography](/doc/references.md) and [acknowledgements](/doc/acknowledgments.md) for this project are available in the documentation folder
+> please review the [experiment results](/doc/negotiation_results.md) for more in-depth analysis
