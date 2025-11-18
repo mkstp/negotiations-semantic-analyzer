@@ -183,8 +183,8 @@ L S strongest responses are to ID 22 and 23 in Y C's turn:
 ```
 "id": 25,
 "turn": 7,
-"name": "Leigh Sembaluk",
-"previous": "Yichun Cheng",
+"name": "L S",
+"previous": "Y C",
 "text": " One is we can make our decision on the other company and and see what goes, for us, the reason we have this algae is because we take care of the environment with it, it, you know, don't know if it existed elsewhere if it wasn't there, but you know, the fact that it exists where we are is because it's a very delicate balance, balance and we've taken care of it.",
 "responseID": 22,
 "responseScore": 0.51,
